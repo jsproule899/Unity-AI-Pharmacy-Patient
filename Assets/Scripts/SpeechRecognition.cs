@@ -86,7 +86,7 @@ public class SpeechRecognition : MonoBehaviour
         bytes = await EncodeAsWAV(samples, clip.frequency, clip.channels);
         
         var res = await OpenAITranscriptionRequest(bytes);
-        aIChat.SendChatFromVoice(res.Text);
+        aIChat.SendChat(res.Text);
         recording = false;
 
     }

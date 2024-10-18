@@ -52,7 +52,7 @@ public class ChatToVoice : MonoBehaviour
     public void ToggleButtonsOnError()
     {
         recordButton.interactable = !recordButton.interactable;
-        sendButton.interactable = !recordButton.interactable;
+        sendButton.interactable = !sendButton.interactable;
     }
 
     public async Task<bool> TextToSpeech(string text)
@@ -62,13 +62,16 @@ public class ChatToVoice : MonoBehaviour
 
         if (voiceAPIOption.captionText.text.Equals("Eleven Labs"))
         {
-            responseAudio = await ElevenLabsPostRequest("http://localhost:3030/api/tts/elevenlabs/", text, "IKne3meq5aSn9XLyUdCD");
+            string voice = "IKne3meq5aSn9XLyUdCD";
+            string body = $@"{{""text"": ""{text}"", ""voice"": ""{voice}""}}";
+            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/elevenlabs/", body);
 
         }
         else if (voiceAPIOption.captionText.text.Equals("Unreal Speech"))
         {
-            responseAudio = await UnrealSpeechMp3Request("http://localhost:3030/api/tts/unrealspeech/stream", text);
-            // audioURI =  await UnrealSpeechUriRequest("http://localhost:3030/api/tts/unrealspeech/speech", text);
+            string body = @$"{{""Text"": ""{text}"", ""VoiceId"": ""Dan""}}";
+            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", body);
+            // audioURI =  await UnrealSpeechUriRequest("http://localhost:3030/api/tts/unrealspeech/speech", body);
         }
 
         if (audioURI != null)
@@ -92,11 +95,8 @@ public class ChatToVoice : MonoBehaviour
         return false;
     }
 
-    private async Task<AudioClip> ElevenLabsPostRequest(string uri, string text, string voice)
+    private async Task<AudioClip> VoicePostRequest(string uri, string body)
     {
-
-        string body = "{\"text\": \"" + text + "\", \"voice\": \"" + voice + "\"}";
-
         using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
         {
             request.downloadHandler = new DownloadHandlerAudioClip(uri, AudioType.MPEG);
@@ -121,11 +121,8 @@ public class ChatToVoice : MonoBehaviour
         }
     }
 
-    private async Task<string> UnrealSpeechUriRequest(string uri, string text)
+    private async Task<string> UnrealSpeechUriRequest(string uri, string body)
     {
-
-        string body = "{\"Text\": \"" + text + "\", \"VoiceId\": \"Dan\"}";
-
         using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
         {
             request.downloadHandler = new DownloadHandlerAudioClip(uri, AudioType.MPEG);
@@ -152,33 +149,6 @@ public class ChatToVoice : MonoBehaviour
         }
     }
 
-    private async Task<AudioClip> UnrealSpeechMp3Request(string uri, string text)
-    {
-
-        string body = "{\"Text\": \"" + text + "\", \"VoiceId\": \"Dan\"}";
-
-        using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
-        {
-            request.downloadHandler = new DownloadHandlerAudioClip(uri, AudioType.MPEG);
-
-            UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
-            while (!asyncOperation.isDone)
-            {
-                await Task.Yield();
-            }
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError(request.error);
-                ToggleButtonsOnError();
-                return null;
-            }
-            else
-            {
-                return ((DownloadHandlerAudioClip)request.downloadHandler).audioClip;
-            }
-        }
-    }
 
     public async Task<AudioClip> LoadAudio(string url)
     {

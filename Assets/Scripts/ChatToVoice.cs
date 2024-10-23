@@ -4,6 +4,7 @@ using ReadyPlayerMe.Core;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using TMPro;
+using Newtonsoft.Json;
 
 public class ChatToVoice : MonoBehaviour
 {
@@ -63,14 +64,14 @@ public class ChatToVoice : MonoBehaviour
         if (voiceAPIOption.captionText.text.Equals("Eleven Labs"))
         {
             string voice = "IKne3meq5aSn9XLyUdCD";
-            string body = $@"{{""text"": ""{text}"", ""voice"": ""{voice}""}}";
-            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/elevenlabs/", body);
+            ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = voice };
+            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
 
         }
         else if (voiceAPIOption.captionText.text.Equals("Unreal Speech"))
         {
-            string body = @$"{{""Text"": ""{text}"", ""VoiceId"": ""Dan""}}";
-            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", body);
+            UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = "Dan" };
+            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
             // audioURI =  await UnrealSpeechUriRequest("http://localhost:3030/api/tts/unrealspeech/speech", body);
         }
 
@@ -94,6 +95,8 @@ public class ChatToVoice : MonoBehaviour
         }
         return false;
     }
+
+
 
     private async Task<AudioClip> VoicePostRequest(string uri, string body)
     {
@@ -177,4 +180,26 @@ public class ChatToVoice : MonoBehaviour
 public struct UnrealSpeechResponse
 {
     public string OutputUri;
+}
+
+public class UnrealSpeechRequest
+{
+    [JsonProperty("Text")]
+    public string Text;
+
+    [JsonProperty("VoiceId")]
+    public string Voice;
+
+
+}
+
+public struct ElevenLabsRequest
+{
+    [JsonProperty("text")]
+    public string Text { get; set; }
+
+    [JsonProperty("voice")]
+    public string Voice { get; set; }
+
+
 }

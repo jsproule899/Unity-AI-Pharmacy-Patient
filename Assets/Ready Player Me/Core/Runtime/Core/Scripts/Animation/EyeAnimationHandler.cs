@@ -157,6 +157,7 @@ namespace ReadyPlayerMe.Core
             if (hasEyeBones)
             {
                 RotateEyes();
+               
             }
 
             if (hasBlinkBlendShapes)

@@ -9,10 +9,6 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
-using System.IO;
-using System.Text;
-
-
 
 public class AIChat : MonoBehaviour
 {
@@ -30,27 +26,27 @@ public class AIChat : MonoBehaviour
     private Scenario scenario;
 
     // Start is called before the first frame update
-    async void Start()
+    void Start()
     {
         sendButton = GameObject.Find("Send Button").GetComponent<Button>();
         recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         apiOption = GameObject.Find("AI Dropdown").GetComponent<TMP_Dropdown>();
-        scenario = Config.scenario;
+        scenario = Config.Scenario;
         string path = Application.persistentDataPath + "/chatlog.txt";
 
         // string systemPrompt = "You are a 25 year old male named Dale. You are a patient in a pharmacy that is looking advice and you are talking to the pharmacist. you aren't feeling well and have the following symptons, headache, nausea, fever. you are frustrated. You are not a pharmacist. Do not offer any advice to the pharmacist. Do not break character. Do not disclose that you are an AI.";
         string systemPrompt = @$"You are roleplaying as the patient in a pharmacy. The context of the roleplay is {scenario.Context}
-Here are the rules for the roleplay: 
-1. Chat exclusively as {scenario.Name} and do not add any actions or reactions to your replies, respond in plain text
-2. Do not break character or disclose that you are AI.
-3. I am roleplaying as the pharmacist.
-4. Do not provide any information about your character unless prompted by the pharmacist.
-5. Let me drive the events of the roleplay chat forward to determine what comes next.
-6. Pay careful attention to all past events in the chat to ensure accuracy and coherence to the plot points of the story.
-        
-This is the information about your character:
-Your name is {scenario.Name}, you are a {scenario.Age} year old {scenario.Gender}. The history of your illness is {scenario.History} and you have the following symptoms: {scenario.Symptoms} and they started {scenario.Time} ago. You have the following allergies: {scenario.Allergies}
-You take {scenario.Medicines} as routine medication. Additional medication taken: {scenario.AdditionalMeds}";
+                                    Here are the rules for the roleplay: 
+                                    1. Chat exclusively as {scenario.Name} and do not add any actions or reactions to your replies, respond in plain text.
+                                    2. Do not break character or disclose that you are AI.
+                                    3. I am roleplaying as the pharmacist.
+                                    4. Do not provide any information about yourself unless directly asked about it.
+                                    5. Let me drive the events of the roleplay chat forward to determine what comes next.
+                                    6. Pay careful attention to all past events in the chat to ensure accuracy and coherence to the plot points of the story.
+                                            
+                                    This is the information about your character:
+                                    Your name is {scenario.Name}, you are a {scenario.Age} year old {scenario.Gender}. The history of your illness is {scenario.History} and you have the following symptoms: {scenario.Symptoms} and they started {scenario.Time} ago. You have the following allergies: {scenario.Allergies}
+                                    You take {scenario.Medicines} as routine medication. Additional medication taken: {scenario.AdditionalMeds}";
 
 
         ChatMessage systemMessage = createSystemMessage(systemPrompt);
@@ -70,7 +66,7 @@ You take {scenario.Medicines} as routine medication. Additional medication taken
     public async void SendChat(string voiceMessage = "")
     {
         string messageToSend = voiceMessage ?? input.text;
-        if(voiceMessage.Length == 0) messageToSend = input.text;
+        if (voiceMessage.Length == 0) messageToSend = input.text;
 
         if (messageToSend == null || messageToSend.Length == 0) return;
 
@@ -80,7 +76,9 @@ You take {scenario.Medicines} as routine medication. Additional medication taken
         ChatMessage userMessage = createUserMessage(messageToSend);
         chatHistory.Add(userMessage);
         message.text = "Pharmacist: " + userMessage.Content;
+        
         input.text = "";
+            
 
 
         AIChatRespone response = null;
@@ -103,6 +101,7 @@ You take {scenario.Medicines} as routine medication. Additional medication taken
             });
 
         }
+        input.Select();
 
         if (response?.Message != null)
         {
@@ -110,43 +109,29 @@ You take {scenario.Medicines} as routine medication. Additional medication taken
             StartCoroutine(TypeText(output, "Patient: " + response.Message));
             var assistantMessage = createAssistantMessage(response.Message);
             chatHistory.Add(assistantMessage);
+            
         }
         else if (response?.Error != null)
         {
             output.text = "Error:" + response.Error.Message;
             chatToVoice.ToggleButtonsOnError();
+            
 
         }
         else
         {
-            output.text = "Error:" + "Error with response from API Proxy";
+            output.text = "Error:" + "API Proxy Error";
             chatToVoice.ToggleButtonsOnError();
+            
         }
+
     }
 
-    public bool CreateChatLog()
-    {
-        string path = Application.persistentDataPath + "/chatlog.txt";
-
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
-
-        using (var stream = File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-        {
-            using (var writer = new StreamWriter(stream))
-            {
-                foreach (ChatMessage message in chatHistory)
-                {
-                    writer.Write($"{message.Role}: ");
-                    writer.WriteLine(message.Content);
-                }
-            }
-        }
-
-        return true;
+    public void saveToLog(){
+       Config.ChatLog.WriteMessagesToChatLog(chatHistory);
     }
+
+   
 
     ChatMessage createUserMessage(string content)
     {

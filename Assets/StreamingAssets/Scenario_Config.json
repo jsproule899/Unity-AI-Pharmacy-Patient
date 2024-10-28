@@ -1,15 +1,21 @@
 {
-    "Context":"Mr Richardson would like 'something good' to get rid of the flu.",
+    "Context": "Mr Richardson would like 'something good' to get rid of the flu.",
     "Name": "Mr Richardson",
+    "Self": true,
+    "Other_Person": {
+        "Name": "Keith",
+        "Age": "35",
+        "Relationship": "Son"
+    },
     "Age": "62",
     "Gender": "Female",
-    "Medicines":"a white tablet for blood pressure",
+    "Medicines": "a white tablet for blood pressure",
     "AdditionalMeds": "Tried wifes benylin to help get a good night sleep",
-    "History":"Nasal congestion, sore head",
+    "History": "Nasal congestion, sore head",
     "Symptoms": "Sneezed and had a runny nose initially, now it is blocked. Also have a sore head. No cough or high temperature",
-    "Allergies": "penicillin", 
+    "Allergies": "penicillin",
     "Time": "3 days",
-    "TTS":"unrealspeech",
+    "AI": "OpenAI",
+    "TTS": "Unreal Speech",
     "Voice": "Dan"
-
 }

@@ -1,34 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using TMPro;
-using ReadyPlayerMe.Core.Editor;
+
 
 public class Config : MonoBehaviour
 {
 
-    public static Scenario scenario;
+    public static Scenario Scenario;
+    public static Student Student;
 
-    [SerializeField]
     public static GameObject Avatar;
+
+    public static ChatLog ChatLog;
 
     [SerializeField]
     private TMP_Text context;
 
 
-    public bool avatarLoaded = false;
+    public static bool AvatarIsLoaded = false;
+    public static bool ConfigIsLoaded = false;
 
-    // Start is called before the first frame update
-    async void Start()
+
+    async void Awake()
     {
-        Avatar = GameObject.FindWithTag("Avatar");
-        scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + "/Scenario_Config.json");
-        context.text = scenario.Context;
+        if (!ConfigIsLoaded)
+        {
+            Avatar = GameObject.FindWithTag("Avatar");
+            Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + "/Scenario_Config.json");
+            context = GameObject.Find("Context").GetComponent<TMP_Text>();
+            context.text = Scenario.Context;
+            ConfigIsLoaded = true;
+        }
+
+
         
-        // avatarLoaded = LoadAvatar();
 
 
     }
@@ -39,22 +43,21 @@ public class Config : MonoBehaviour
 
     }
 
-    private bool LoadAvatar()
+    public static bool LoadAvatar()
     {
+        GameObject oldAvatar = GameObject.FindWithTag("Avatar");
 
-        if (scenario.Gender == "Female")
+        if (Scenario.Gender == "Female")
         {
-            
-            
-            
-
+            Avatar = Instantiate(Resources.Load("Female_Avatar"), oldAvatar.transform.position, oldAvatar.transform.rotation, oldAvatar.transform.parent) as GameObject;
 
         }
         else
         {
-            Avatar = Instantiate(Resources.Load("Male_Avatar")) as GameObject;
+            Avatar = Instantiate(Resources.Load("Male_Avatar"), oldAvatar.transform.position, oldAvatar.transform.rotation, oldAvatar.transform.parent) as GameObject;
         }
-
+        Destroy(oldAvatar);
+        AvatarIsLoaded = true;
         return true;
 
     }

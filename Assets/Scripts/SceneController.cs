@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +6,15 @@ public class SceneController : MonoBehaviour
 {
 
     public Animator transition;
+
+    private void Start(){
+        
+
+    }
+
+    public void Update(){
+
+    }
 
     public void LoadNextScene()
     {

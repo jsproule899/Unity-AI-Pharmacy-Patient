@@ -8,11 +8,10 @@ using Newtonsoft.Json;
 
 public class ChatToVoice : MonoBehaviour
 {
-    [SerializeField] GameObject avatar;
+    
     Button recordButton;
     Button sendButton;
     TMP_Dropdown voiceAPIOption;
-
     AudioSource avatarAudio;
     VoiceHandler avatarVoiceHandler;
     private bool hasPlayed = false;
@@ -21,8 +20,10 @@ public class ChatToVoice : MonoBehaviour
         recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         sendButton = GameObject.Find("Send Button").GetComponent<Button>();
         voiceAPIOption = GameObject.Find("AI Voice Dropdown").GetComponent<TMP_Dropdown>();
-        avatarAudio = avatar.GetComponent<AudioSource>();
-        avatarVoiceHandler = avatar.GetComponent<VoiceHandler>();
+        
+        
+        avatarAudio = Config.Avatar.GetComponent<AudioSource>();
+        avatarVoiceHandler = Config.Avatar.GetComponent<VoiceHandler>();
 
     }
 

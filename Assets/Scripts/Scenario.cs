@@ -1,21 +1,23 @@
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
 
 public class Scenario
 {
-    public string Context;
-    public string Name;
-    public int Age;
-    public string Gender;
-    public string Medicines;
-    public string AdditionalMeds;
-    public string History;
-    public string Symptoms;
-    public string Allergies;
-    public string Time;
-    
+    public int Id { get; set; }
+    public string Context { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Gender { get; set; }
+    public string Medicines { get; set; }
+    public string AdditionalMeds { get; set; }
+    public string History { get; set; }
+    public string Symptoms { get; set; }
+    public string Allergies { get; set; }
+    public string Time { get; set; }
+
     public static async Task<Scenario> LoadConfig(string config)
     {
 
@@ -34,7 +36,7 @@ public class Scenario
             }
             else
             {
-                return JsonUtility.FromJson<Scenario>(request.downloadHandler.text);
+                return JsonConvert.DeserializeObject<Scenario>(request.downloadHandler.text);
             }
         }
 

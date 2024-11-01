@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 using System.Linq;
+using WebGLAudioData;
+
 
 
 public class SpeechRecognition : MonoBehaviour
@@ -21,20 +23,25 @@ public class SpeechRecognition : MonoBehaviour
     private bool recording;
     private AudioSource audioSource;
     private float[] clipSampleData = new float[512];
-    private float thresholdDb = -100;
+    private float thresholdDb = -80f;
     private bool isSpeaking = false;
     private bool spoke = false;
     private bool isListening = false;
 
+    private SpeechDetector speechDetector;
+
 
     void Start()
     {
+
         recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         sendButton = GameObject.Find("Send Button").GetComponent<Button>();
         recordButton.onClick.AddListener(ToggleListening);
         recordButtonText = recordButton.GetComponentInChildren<TextMeshProUGUI>();
         audioSource = GetComponent<AudioSource>();
-        InvokeRepeating("ListeningForSpeech",0.1f, 0.5f);
+        speechDetector = GetComponent<SpeechDetector>();
+        Debug.Log($"Threshold set to : {thresholdDb}");
+        InvokeRepeating("ListeningForSpeech", 0.25f, 0.5f);
 
 
     }
@@ -45,9 +52,6 @@ public class SpeechRecognition : MonoBehaviour
         {
             StopRecording();
         }
-        
-
-
 
         if (recording && spoke && !isSpeaking)
         {
@@ -59,18 +63,8 @@ public class SpeechRecognition : MonoBehaviour
             StartRecording();
         }
 
-
     }
 
-    // private IEnumerator SetThresholdDb()
-    // {
-    //     yield return new WaitForSeconds(1);
-    //     audioSource.GetSpectrumData(clipSampleData, 0, FFTWindow.Rectangular);
-    //     float currentAverageVolumeDb = LinearToDecibel(clipSampleData.Average());
-    //     thresholdDb = currentAverageVolumeDb;
-    //     Debug.Log("DB Threshold set: " + thresholdDb);
-
-    // }
 
     private float LinearToDecibel(float linear)
     {
@@ -97,22 +91,34 @@ public class SpeechRecognition : MonoBehaviour
     private void ListeningForSpeech()
     {
 
-       if (!isListening) return;
+        if (!isListening)
+        {
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+            SpeechDetector.StopListening();
+#endif
+            return;
+        }
+
+        float currentAverageVolumeDb;
+#if UNITY_EDITOR
         audioSource.GetSpectrumData(clipSampleData, 0, FFTWindow.Rectangular);
-        float currentAverageVolumeDb = LinearToDecibel(clipSampleData.Average());
+        currentAverageVolumeDb = LinearToDecibel(clipSampleData.Average());
+#endif
+#if UNITY_WEBGL && !UNITY_EDITOR
+            SpeechDetector.checkForSpeech();
+            currentAverageVolumeDb = speechDetector.maxVolume;
+#endif
+
+        // Debug.Log($"From unity: {currentAverageVolumeDb}");
         if (currentAverageVolumeDb > thresholdDb)
         {
-            Debug.Log("Speaking");
             isSpeaking = true;
             spoke = true;
         }
         else
         {
-            // Debug.Log(currentAverageVolumeDb);
-            Debug.Log("Silent");
             isSpeaking = false;
-
         }
     }
 
@@ -144,7 +150,7 @@ public class SpeechRecognition : MonoBehaviour
     }
     private void StartRecording()
     {
-
+        if (recording) return;
         setButtonColor("red");
         recordButtonText.text = "Listening...";
         clip = Microphone.Start(null, false, 240, 44100);
@@ -157,15 +163,18 @@ public class SpeechRecognition : MonoBehaviour
 
     private async void StopRecording()
     {
+        if (!recording) return;
         recordButtonText.text = "Speak";
         setButtonColor("white");
-       
+
 
         int position = Microphone.GetPosition("");
         Microphone.End(null);
         recording = false;
         if (spoke)
         {
+            sendButton.interactable = false;
+            recordButton.interactable = false;
             float[] samples = new float[position * clip.channels];
             clip.GetData(samples, 0);
             bytes = await EncodeAsWAV(samples, clip.frequency, clip.channels);

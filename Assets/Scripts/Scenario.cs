@@ -9,6 +9,9 @@ public class Scenario
     public int Id { get; set; }
     public string Context { get; set; }
     public string Name { get; set; }
+
+    public bool Self { get; set; }
+    public OtherPerson Other_Person { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }
     public string Medicines { get; set; }
@@ -17,6 +20,10 @@ public class Scenario
     public string Symptoms { get; set; }
     public string Allergies { get; set; }
     public string Time { get; set; }
+    public string AI { get; set; }
+    public string Model { get; set; }
+    public string TTS { get; set; }
+    public string Voice { get; set; }
 
     public static async Task<Scenario> LoadConfig(string config)
     {
@@ -43,4 +50,9 @@ public class Scenario
 
     }
 }
-
+public struct OtherPerson
+{
+    public string Name { get; set; }
+    public string Age { get; set; }
+    public string Relationship { get; set; }
+}

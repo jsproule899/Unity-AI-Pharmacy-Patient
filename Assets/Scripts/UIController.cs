@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,17 +11,21 @@ public class UIController : MonoBehaviour
     private TMP_InputField studentNumInput;
     private TMP_InputField justificationInput;
 
-    private TMP_InputField questionInput;
+    private TMP_InputField KeyboardInput;
     private Button startButton;
     private Button treatButton;
     private Button referButton;
 
+    private Button switchInputButton;
+     private TextMeshProUGUI switchInputButtonText; 
+    private Button recordButton;
+
     private Button sendButton;
 
-   
+
     void Start()
     {
-               
+
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 0:
@@ -31,7 +36,7 @@ public class UIController : MonoBehaviour
                     Config.Student = new Student(studentNumInput.text);
                     Config.ChatLog = new ChatLog($"{Config.Student.Id}_{Config.Scenario.Id}");
                     Config.ChatLog.WriteConfigToChatLog();
-                    
+
 
                 });
 
@@ -43,9 +48,12 @@ public class UIController : MonoBehaviour
                 });
                 break;
             case 1:
-                questionInput = GameObject.Find("User Input").GetComponent<TMP_InputField>();
+                switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();
+                switchInputButtonText = switchInputButton.GetComponentInChildren<TextMeshProUGUI>();
+                recordButton = GameObject.Find("Record Button").GetComponent<Button>();
+                KeyboardInput = GameObject.Find("User Input").GetComponent<TMP_InputField>();
                 sendButton = GameObject.Find("Send Button").GetComponent<Button>();
-                questionInput.Select();
+                SwitchInput();
                 break;
             case 2:
                 justificationInput = GameObject.Find("Justification Input").GetComponent<TMP_InputField>();
@@ -97,5 +105,25 @@ public class UIController : MonoBehaviour
         }
     }
 
+    public void SwitchInput()
+    {
+        if (KeyboardInput.gameObject.activeSelf && sendButton.gameObject.activeSelf)
+        {
+            KeyboardInput.gameObject.SetActive(false);
+            sendButton.gameObject.SetActive(false);
+            recordButton.gameObject.SetActive(true);
+            switchInputButton.Select();
+            switchInputButtonText.text = "Keyboard";
+        }
+        else if (recordButton.gameObject.activeSelf)
+        {
+             KeyboardInput.gameObject.SetActive(true);
+            sendButton.gameObject.SetActive(true);
+            recordButton.gameObject.SetActive(false);
+            KeyboardInput.Select();
+            switchInputButtonText.text = "Microphone";
+        }
+
+    }
 
 }

@@ -8,22 +8,26 @@ using Newtonsoft.Json;
 
 public class ChatToVoice : MonoBehaviour
 {
-    
+
     Button recordButton;
     Button sendButton;
     TMP_Dropdown voiceAPIOption;
     AudioSource avatarAudio;
     VoiceHandler avatarVoiceHandler;
     private bool hasPlayed = false;
+
+    private Scenario scenario;
     void Start()
     {
         recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         sendButton = GameObject.Find("Send Button").GetComponent<Button>();
         voiceAPIOption = GameObject.Find("AI Voice Dropdown").GetComponent<TMP_Dropdown>();
-        
-        
+
+
         avatarAudio = Config.Avatar.GetComponent<AudioSource>();
         avatarVoiceHandler = Config.Avatar.GetComponent<VoiceHandler>();
+        scenario = Config.Scenario;
+        voiceAPIOption.captionText.text = scenario.TTS;
 
     }
 
@@ -71,7 +75,7 @@ public class ChatToVoice : MonoBehaviour
         }
         else if (voiceAPIOption.captionText.text.Equals("Unreal Speech"))
         {
-            UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = "Dan" };
+            UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = scenario.Voice };
             responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
             // audioURI =  await UnrealSpeechUriRequest("http://localhost:3030/api/tts/unrealspeech/speech", body);
         }

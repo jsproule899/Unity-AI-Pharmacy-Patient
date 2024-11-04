@@ -32,6 +32,7 @@ public class AIChat : MonoBehaviour
         recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         apiOption = GameObject.Find("AI Dropdown").GetComponent<TMP_Dropdown>();
         scenario = Config.Scenario;
+        apiOption.captionText.text = scenario.AI;
         string path = Application.persistentDataPath + "/chatlog.txt";
 
         // string systemPrompt = "You are a 25 year old male named Dale. You are a patient in a pharmacy that is looking advice and you are talking to the pharmacist. you aren't feeling well and have the following symptons, headache, nausea, fever. you are frustrated. You are not a pharmacist. Do not offer any advice to the pharmacist. Do not break character. Do not disclose that you are an AI.";
@@ -87,7 +88,7 @@ public class AIChat : MonoBehaviour
         {
             response = await AIChatRequest("http://localhost:3030/api/aichat/openai", new CreateChatCompletionRequest
             {
-                Model = "gpt-4o-mini",
+                Model = scenario.Model,
                 Messages = chatHistory
             });
 
@@ -96,7 +97,7 @@ public class AIChat : MonoBehaviour
         {
             response = await AIChatRequest("http://localhost:3030/api/aichat/anthropic", new CreateChatCompletionRequest
             {
-                Model = "claude-3-haiku-20240307",
+                Model = scenario.Model,
                 Messages = chatHistory
             });
 

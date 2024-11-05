@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using JSBrowserUtilities;
+using System.Linq;
 
 
 public class Config : MonoBehaviour
@@ -24,8 +26,11 @@ public class Config : MonoBehaviour
     {
         if (!ConfigIsLoaded)
         {
+            string[] urlPath = BrowserHelper.JS_GetUrlPath().Split("/");
+            string scenarioId = urlPath.Last();
+
             Avatar = GameObject.FindWithTag("Avatar");
-            Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + "/Scenario_Config.json");
+            Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + $"/Scenario_Config{scenarioId}.json");
             context = GameObject.Find("Context").GetComponent<TMP_Text>();
             context.text = Scenario.Context;
             ConfigIsLoaded = true;

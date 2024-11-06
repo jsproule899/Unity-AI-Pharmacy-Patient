@@ -1774,7 +1774,7 @@ GameObject:
   - component: {fileID: 662473367}
   - component: {fileID: 662473368}
   m_Layer: 5
-  m_Name: User Input Text
+  m_Name: User Message
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3258,6 +3258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0db10e4d3c34f84488371d58827dbb56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UI: {fileID: 921401561}
 --- !u!4 &1146512491
 Transform:
   m_ObjectHideFlags: 0
@@ -3319,6 +3320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863df70669ba5d447acd99d142ecfc60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UI: {fileID: 921401561}
   aIChat: {fileID: 1357820571}
 --- !u!114 &1194090404
 MonoBehaviour:
@@ -4081,11 +4083,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf557e5515f93c49bf7affb560f3440, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 592784224}
-  message: {fileID: 662473367}
-  output: {fileID: 1915615123}
+  UI: {fileID: 921401561}
   chatToVoice: {fileID: 1146512490}
-  typingSpeed: 0.025
+  typingSpeed: 0.05
 --- !u!4 &1357820572
 Transform:
   m_ObjectHideFlags: 0
@@ -5020,7 +5020,7 @@ GameObject:
   - component: {fileID: 1915615124}
   - component: {fileID: 1915615123}
   m_Layer: 5
-  m_Name: AI Output Text
+  m_Name: AI Message
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

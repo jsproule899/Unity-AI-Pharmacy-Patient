@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using OpenAI;
-using UnityEngine.UI;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
@@ -12,24 +11,17 @@ using System.Globalization;
 
 public class AIChat : MonoBehaviour
 {
+    public UIController UI;
 
-    [SerializeField] private TMP_InputField input;
-    [SerializeField] private TextMeshProUGUI message;
-    [SerializeField] private TextMeshProUGUI output;
     [SerializeField] private ChatToVoice chatToVoice;
-    Button sendButton;
-    Button recordButton;
     TMP_Dropdown apiOption;
-    public float typingSpeed = 0.1f; // Speed of typing in seconds
+    public float typingSpeed = 0.05f; // Speed of typing in seconds
     private List<ChatMessage> chatHistory = new List<ChatMessage>();
-
     private Scenario scenario;
 
     // Start is called before the first frame update
     void Start()
     {
-        sendButton = GameObject.Find("Send Button").GetComponent<Button>();
-        recordButton = GameObject.Find("Record Button").GetComponent<Button>();
         apiOption = GameObject.Find("AI Dropdown").GetComponent<TMP_Dropdown>();
         scenario = Config.Scenario;
         apiOption.captionText.text = scenario.AI;
@@ -58,7 +50,7 @@ public class AIChat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && sendButton.interactable)
+        if (Input.GetKeyDown(KeyCode.Return) && UI.sendButton.interactable)
         {
             SendChat();
         }
@@ -66,20 +58,20 @@ public class AIChat : MonoBehaviour
     }
     public async void SendChat(string voiceMessage = "")
     {
-        string messageToSend = voiceMessage ?? input.text;
-        if (voiceMessage.Length == 0) messageToSend = input.text;
+        string messageToSend = voiceMessage ?? UI.KeyboardInput.text;
+        if (voiceMessage.Length == 0) messageToSend = UI.KeyboardInput.text;
 
         if (messageToSend == null || messageToSend.Length == 0) return;
 
-        sendButton.interactable = false;
-        recordButton.interactable = false;
-        output.text = "";
+        UI.sendButton.interactable = false;
+        UI.recordButton.interactable = false;
+        UI.AIMessage.text = "";
         ChatMessage userMessage = createUserMessage(messageToSend);
         chatHistory.Add(userMessage);
-        message.text = "Pharmacist: " + userMessage.Content;
-        
-        input.text = "";
-            
+        UI.userMessage.text = "Pharmacist: " + userMessage.Content;
+
+        UI.KeyboardInput.text = "";
+
 
 
         AIChatRespone response = null;
@@ -102,37 +94,38 @@ public class AIChat : MonoBehaviour
             });
 
         }
-        input.Select();
+        UI.KeyboardInput.Select();
 
         if (response?.Message != null)
         {
             await chatToVoice.TextToSpeech(response.Message);
-            StartCoroutine(TypeText(output, "Patient: " + response.Message));
+            StartCoroutine(TypeText(UI.AIMessage, "Patient: " + response.Message));
             var assistantMessage = createAssistantMessage(response.Message);
             chatHistory.Add(assistantMessage);
-            
+
         }
         else if (response?.Error != null)
         {
-            output.text = "Error:" + response.Error.Message;
-            chatToVoice.ToggleButtonsOnError();
-            
+            UI.AIMessage.text = "Error:" + response.Error.Message;
+            UI.ToggleButtonsOnError();
+
 
         }
         else
         {
-            output.text = "Error:" + "API Proxy Error";
-            chatToVoice.ToggleButtonsOnError();
-            
+            UI.AIMessage.text = "Error:" + "API Proxy Error";
+            UI.ToggleButtonsOnError();
+
         }
 
     }
 
-    public void saveToLog(){
-       Config.ChatLog.WriteMessagesToChatLog(chatHistory);
+    public void saveToLog()
+    {
+        Config.ChatLog.WriteMessagesToChatLog(chatHistory);
     }
 
-   
+
 
     ChatMessage createUserMessage(string content)
     {

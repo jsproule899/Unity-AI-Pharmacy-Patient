@@ -8,19 +8,21 @@ using UnityEngine.UI;
 public class UIController : MonoBehaviour
 {
 
-    private TMP_InputField studentNumInput;
-    private TMP_InputField justificationInput;
+    public TMP_InputField studentNumInput;
+    public TMP_InputField justificationInput;
 
-    private TMP_InputField KeyboardInput;
-    private Button startButton;
-    private Button treatButton;
-    private Button referButton;
+    public TMP_InputField KeyboardInput;
+    public TextMeshProUGUI userMessage;
+    public TextMeshProUGUI AIMessage;
+    public Button startButton;
+    public Button treatButton;
+    public Button referButton;
 
-    private Button switchInputButton;
-     private TextMeshProUGUI switchInputButtonText; 
-    private Button recordButton;
-
-    private Button sendButton;
+    public Button switchInputButton;
+    public TextMeshProUGUI switchInputButtonText;
+    public Button recordButton;
+    public TextMeshProUGUI recordButtonText;
+    public Button sendButton;
 
 
     void Start()
@@ -51,8 +53,11 @@ public class UIController : MonoBehaviour
                 switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();
                 switchInputButtonText = switchInputButton.GetComponentInChildren<TextMeshProUGUI>();
                 recordButton = GameObject.Find("Record Button").GetComponent<Button>();
+                recordButtonText = recordButton.GetComponentInChildren<TextMeshProUGUI>();
                 KeyboardInput = GameObject.Find("User Input").GetComponent<TMP_InputField>();
                 sendButton = GameObject.Find("Send Button").GetComponent<Button>();
+                userMessage = GameObject.Find("User Message").GetComponent<TextMeshProUGUI>();
+                AIMessage = GameObject.Find("AI Message").GetComponent<TextMeshProUGUI>();
                 SwitchInput();
                 break;
             case 2:
@@ -117,11 +122,31 @@ public class UIController : MonoBehaviour
         }
         else if (recordButton.gameObject.activeSelf)
         {
-             KeyboardInput.gameObject.SetActive(true);
+            KeyboardInput.gameObject.SetActive(true);
             sendButton.gameObject.SetActive(true);
             recordButton.gameObject.SetActive(false);
             KeyboardInput.Select();
             switchInputButtonText.text = "Microphone";
+        }
+
+    }
+
+     public void ToggleButtonsOnError()
+    {
+        recordButton.interactable = !recordButton.interactable;
+        sendButton.interactable = !sendButton.interactable;
+    }
+
+        public void setButtonColor(Button button, string colour)
+    {
+
+        if (colour.Equals("red"))
+        {
+            button.image.color = new Color32(255, 100, 100, 255);
+        }
+        else if (colour.Equals("white"))
+        {
+            button.image.color = new Color32(255, 255, 255, 255);
         }
 
     }

@@ -26,8 +26,12 @@ public class Config : MonoBehaviour
     {
         if (!ConfigIsLoaded)
         {
+            #if UNITY_WEBGL && !UNITY_EDITOR
             string[] urlPath = BrowserHelper.JS_GetUrlPath().Split("/");
             string scenarioId = urlPath.Last();
+            #else
+            string scenarioId = "1";
+            #endif
 
             Avatar = GameObject.FindWithTag("Avatar");
             Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + $"/Scenario_Config{scenarioId}.json");

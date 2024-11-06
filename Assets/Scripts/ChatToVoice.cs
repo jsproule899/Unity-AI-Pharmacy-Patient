@@ -8,9 +8,8 @@ using Newtonsoft.Json;
 
 public class ChatToVoice : MonoBehaviour
 {
+    public UIController UI;
 
-    Button recordButton;
-    Button sendButton;
     TMP_Dropdown voiceAPIOption;
     AudioSource avatarAudio;
     VoiceHandler avatarVoiceHandler;
@@ -19,8 +18,6 @@ public class ChatToVoice : MonoBehaviour
     private Scenario scenario;
     void Start()
     {
-        recordButton = GameObject.Find("Record Button").GetComponent<Button>();
-        sendButton = GameObject.Find("Send Button").GetComponent<Button>();
         voiceAPIOption = GameObject.Find("AI Voice Dropdown").GetComponent<TMP_Dropdown>();
 
 
@@ -42,24 +39,20 @@ public class ChatToVoice : MonoBehaviour
     {
         if (avatarAudio.isPlaying)
         {
-            recordButton.interactable = false;
-            sendButton.interactable = false;
+            UI.recordButton.interactable = false;
+            UI.sendButton.interactable = false;
             hasPlayed = true;
         }
         else if (hasPlayed && !avatarAudio.isPlaying)
         {
-            recordButton.interactable = true;
-            sendButton.interactable = true;
+            UI.recordButton.interactable = true;
+            UI.sendButton.interactable = true;
             hasPlayed = false;
         }
 
     }
 
-    public void ToggleButtonsOnError()
-    {
-        recordButton.interactable = !recordButton.interactable;
-        sendButton.interactable = !sendButton.interactable;
-    }
+   
 
     public async Task<bool> TextToSpeech(string text)
     {
@@ -118,7 +111,7 @@ public class ChatToVoice : MonoBehaviour
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError(request.error);
-                ToggleButtonsOnError();
+                UI.ToggleButtonsOnError();
                 return null;
             }
             else
@@ -144,7 +137,7 @@ public class ChatToVoice : MonoBehaviour
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError(request.error);
-                ToggleButtonsOnError();
+                UI.ToggleButtonsOnError();
                 return null;
             }
             else
@@ -170,7 +163,7 @@ public class ChatToVoice : MonoBehaviour
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogWarning("Audio error:" + request.error);
-                ToggleButtonsOnError();
+                UI.ToggleButtonsOnError();
                 return null;
             }
             else

@@ -1,14 +1,24 @@
 var SpeechDetector = {
+
+
     JS_SpeechDetector_InitOrResumeContext: function () {
         if (!WEBAudio || WEBAudio.audioWebEnabled == 0) {
             // No WEBAudio object (Unity version changed?)
             return false;
         }
 
+        var constraints = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: false,
+            }
+        };
+
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             navigator.getUserMedia =
-                navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia || navigator.msGetUserMedia;
+                navigator.getUserMedia(constraints) || navigator.webkitGetUserMedia(constraints) ||
+                navigator.mozGetUserMedia(constraints) || navigator.msGetUserMedia(constraints);
             if (!navigator.getUserMedia) {
                 return false;
             }
@@ -36,9 +46,17 @@ var SpeechDetector = {
     },
 
 
-    JS_SpeechDetector_checkForSpeech: function () {
+    JS_SpeechDetector_checkForSpeech: function (delayInMilliseconds) {
         let maxVolume = -144.0
         var sdCtx = document.speechDetectorContext;
+
+        var constraints = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: false,
+            }
+        };
 
         var handleStream = function (userMediaStream) {
             var stream = {};
@@ -46,38 +64,43 @@ var SpeechDetector = {
 
             stream.microphone = sdCtx.audioContext.createMediaStreamSource(stream.userMediaStream);
             stream.analyser = sdCtx.audioContext.createAnalyser();
-            stream.analyser.smoothingTimeConstant = 0.8;
+            stream.filter = sdCtx.audioContext.createBiquadFilter();
+            stream.filter.type = 'bandpass';
+            stream.filter.frequency.setValueAtTime(1500, sdCtx.audioContext.currentTime); // Center frequency for speech
+            stream.filter.Q.setValueAtTime(1, sdCtx.audioContext.currentTime); // Adjust bandwidth
+            stream.analyser.smoothingTimeConstant = 0.5;
 
 
-            stream.microphone.connect(stream.analyser);
+            stream.microphone.connect(stream.filter);
+            stream.filter.connect(stream.analyser)
             stream.analyser.fftSize = 256;
 
             const dataArray = new Float32Array(stream.analyser.frequencyBinCount);
 
             setTimeout(() => {
                 stream.analyser.getFloatFrequencyData(dataArray)
-
                 for (i = 0; i < dataArray.length; i++) {
                     if (dataArray[i] > maxVolume && dataArray[i] < 0) {
                         maxVolume = dataArray[i];
                         myInstance.SendMessage('SpeechRecognition', 'SetMaxVolume', maxVolume);
-
                     }
+
                 }
-            }, 250)
+
+            }, delayInMilliseconds)
 
             sdCtx.stream = stream;
             return maxVolume
         }
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ audio: true })
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(function (umStream) {
                     maxVolume = handleStream(umStream);
 
                 }).catch(function (e) { console.error(e.name + ": " + e.message); });
         } else {
-            navigator.getUserMedia({ audio: true },
+            navigator.getUserMedia(constraints,
                 function (umStream) { handleStream(umStream); },
                 function (e) { console.error(e.name + ": " + e.message); });
         }

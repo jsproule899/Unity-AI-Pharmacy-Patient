@@ -25,7 +25,7 @@ public class UIController : MonoBehaviour
     public Button sendButton;
 
 
-    void Start()
+    void Awake()
     {
 
         switch (SceneManager.GetActiveScene().buildIndex)

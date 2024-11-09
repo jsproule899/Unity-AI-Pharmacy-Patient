@@ -5,11 +5,12 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using TMPro;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
+using UnityEngine.Windows.Speech;
 
 public class ChatToVoice : MonoBehaviour
 {
     public UIController UI;
-
     TMP_Dropdown voiceAPIOption;
     AudioSource avatarAudio;
     VoiceHandler avatarVoiceHandler;
@@ -19,7 +20,6 @@ public class ChatToVoice : MonoBehaviour
     void Start()
     {
         voiceAPIOption = GameObject.Find("AI Voice Dropdown").GetComponent<TMP_Dropdown>();
-
 
         avatarAudio = Config.Avatar.GetComponent<AudioSource>();
         avatarVoiceHandler = Config.Avatar.GetComponent<VoiceHandler>();
@@ -39,20 +39,22 @@ public class ChatToVoice : MonoBehaviour
     {
         if (avatarAudio.isPlaying)
         {
+           Config.Avatar.GetComponent<Animator>().SetBool("isTalking", true);
             UI.recordButton.interactable = false;
             UI.sendButton.interactable = false;
             hasPlayed = true;
         }
         else if (hasPlayed && !avatarAudio.isPlaying)
         {
+            Config.Avatar.GetComponent<Animator>().SetBool("isTalking", false);
             UI.recordButton.interactable = true;
             UI.sendButton.interactable = true;
             hasPlayed = false;
+            
         }
 
     }
 
-   
 
     public async Task<bool> TextToSpeech(string text)
     {
@@ -77,6 +79,9 @@ public class ChatToVoice : MonoBehaviour
         {
             responseAudio = await LoadAudio(audioURI);
         }
+
+        if (UI.KeyboardInput.gameObject.activeSelf)
+                UI.KeyboardInput.Select();
 
         return PlayAvatarVoiceClip(responseAudio);
 

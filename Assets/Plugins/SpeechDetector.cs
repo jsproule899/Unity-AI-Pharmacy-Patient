@@ -12,7 +12,7 @@ namespace WebGLAudioData
         public static extern float JS_SpeechDetector_InitOrResumeContext();
 
         [DllImport("__Internal")]
-        public static extern float JS_SpeechDetector_checkForSpeech();
+        public static extern float JS_SpeechDetector_checkForSpeech(int delayInMilliseconds);
 
         [DllImport("__Internal")]
         public static extern void JS_SpeechDetector_StopListening();
@@ -22,10 +22,10 @@ namespace WebGLAudioData
             this.maxVolume = maxInput;
         }
 
-        public static void checkForSpeech()
+        public static void checkForSpeech(int delayInMilliseconds)
         {
             JS_SpeechDetector_InitOrResumeContext();
-            JS_SpeechDetector_checkForSpeech();
+            JS_SpeechDetector_checkForSpeech(delayInMilliseconds);
         }
 
         public static void StopListening()

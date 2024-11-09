@@ -30,7 +30,7 @@ public class Config : MonoBehaviour
             string[] urlPath = BrowserHelper.JS_GetUrlPath().Split("/");
             string scenarioId = urlPath.Last();
             #else
-            string scenarioId = "1";
+            string scenarioId = "";
             #endif
 
             Avatar = GameObject.FindWithTag("Avatar");

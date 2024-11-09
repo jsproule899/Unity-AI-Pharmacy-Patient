@@ -1,6 +1,4 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using System.IO;
 using OpenAI;
 using System.Threading.Tasks;
@@ -8,9 +6,6 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using System.Linq;
 using WebGLAudioData;
-using System;
-
-
 
 public class SpeechRecognition : MonoBehaviour
 {
@@ -18,25 +13,28 @@ public class SpeechRecognition : MonoBehaviour
     [SerializeField] private AIChat aIChat;
     private AudioClip clip;
     private byte[] bytes;
-    private bool recording;
+    private bool isRecording = false;
     private AudioSource audioSource;
     private float[] clipSampleData = new float[8192];
     private float thresholdDb = -80f;
     private bool isSpeaking = false;
-    private bool spoke = false;
+    private bool hasSpoke = false;
     private bool isListening = false;
     private bool thresholdSet = false;
-    private bool isPushToTalk = false;
+    private bool isPushingToTalk = false;
 
     private SpeechDetector speechDetector;
 
 
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        speechDetector = GetComponent<SpeechDetector>();
+    }
     void Start()
     {
         UI.recordButton.onClick.AddListener(ToggleListening);
-        audioSource = GetComponent<AudioSource>();
-        speechDetector = GetComponent<SpeechDetector>();
-        InvokeRepeating("ListeningForSpeech", 0.25f, 0.5f);
+
     }
 
     private void Update()
@@ -49,31 +47,33 @@ public class SpeechRecognition : MonoBehaviour
         // Check for the push-to-talk key (Space key)
         if (Input.GetKeyDown(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
-            isPushToTalk = true;
+            isPushingToTalk = true;
             ToggleListening(); // Start listening when the key is pressed
         }
 
         if (Input.GetKeyUp(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
-            isPushToTalk = false;
+            isPushingToTalk = false;
             // Stop listening when the key is released
             if (isListening)
             {
-                spoke = true;
+                hasSpoke = true;
                 isSpeaking = false;
                 ToggleListening();
             }
         }
 
-        if ((recording && spoke && !isSpeaking && !isPushToTalk) || (recording && Microphone.GetPosition("") >= clip.samples))
-        {
-            StopRecording();
-        }
-
-        if (!recording && !spoke && isListening && UI.recordButton.interactable)
+        if (!isRecording && !hasSpoke && isListening && UI.recordButton.interactable)
         {
             StartRecording();
         }
+
+        if ((isRecording && hasSpoke && !isSpeaking && !isPushingToTalk) || (isRecording && Microphone.GetPosition("") >= clip.samples))
+        {
+
+            StopRecording();
+        }
+
     }
 
 
@@ -95,6 +95,14 @@ public class SpeechRecognition : MonoBehaviour
 
     private void ToggleListening()
     {
+        if (isListening)
+        {
+            CancelInvoke("ListeningForSpeech");
+        }
+        else
+        {
+            InvokeRepeating("ListeningForSpeech", 0.5f, 0.5f);
+        }
         isListening = !isListening;
         toggleRecording();
     }
@@ -102,10 +110,10 @@ public class SpeechRecognition : MonoBehaviour
     private void SetSpeechThreshold()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        SpeechDetector.checkForSpeech();
+        SpeechDetector.checkForSpeech(250);
         if(speechDetector.maxVolume > -144.0f)
         {
-            thresholdDb = speechDetector.maxVolume + 20; 
+            thresholdDb = speechDetector.maxVolume + 30; 
             Debug.Log($"Threshold is now set to : {thresholdDb}");
             thresholdSet = true;
             SpeechDetector.StopListening();
@@ -115,8 +123,6 @@ public class SpeechRecognition : MonoBehaviour
         Debug.Log($"Threshold is now set to : {thresholdDb}");
         thresholdSet = true;
 #endif
-
-
     }
 
     private void ListeningForSpeech()
@@ -137,15 +143,15 @@ public class SpeechRecognition : MonoBehaviour
         currentVolumeDb = LinearToDecibel(clipSampleData.Average());
 #endif
 #if UNITY_WEBGL && !UNITY_EDITOR
-            SpeechDetector.checkForSpeech();
+            SpeechDetector.checkForSpeech(250);
             currentVolumeDb = speechDetector.maxVolume;
 #endif
 
-        Debug.Log($"From unity: {currentVolumeDb}");
-        if (currentVolumeDb > thresholdDb)
+        // Debug.Log($"From unity: {currentVolumeDb}");
+        if (currentVolumeDb > thresholdDb && isRecording)
         {
             isSpeaking = true;
-            spoke = true;
+            hasSpoke = true;
         }
         else
         {
@@ -156,7 +162,7 @@ public class SpeechRecognition : MonoBehaviour
 
     private void toggleRecording()
     {
-        if (recording)
+        if (isRecording)
         {
             StopRecording();
         }
@@ -169,42 +175,43 @@ public class SpeechRecognition : MonoBehaviour
 
     private void StartRecording()
     {
-        if (recording) return;
-        UI.setButtonColor(UI.recordButton, "red");
-        UI.recordButtonText.text = "Listening...";
-        clip = Microphone.Start(null, true, 240, 44100);
-        recording = true;
+        if (isRecording) return;
+        UI.recordButton.animator.SetBool("isRecording", true);
+        // UI.setButtonColor(UI.recordButton, "red");
+        // UI.recordButtonText.text = "Listening...";
+        clip = Microphone.Start(null, false, 240, 44100);
+        isRecording = true;
         audioSource.clip = clip;
         audioSource.Play();
     }
 
     private async void StopRecording()
     {
-        if (!recording) return;
-        UI.recordButtonText.text = "Speak";
-        UI.setButtonColor(UI.recordButton, "white");
+        UI.recordButton.animator.SetBool("isRecording", false);
+        // UI.recordButtonText.text = "Speak";
+        // UI.setButtonColor(UI.recordButton, "white");
 
         int position = Microphone.GetPosition("");
         Microphone.End(null);
-        recording = false;
-        if (spoke)
+        isRecording = false;
+
+        if (hasSpoke)
         {
             UI.sendButton.interactable = false;
             UI.recordButton.interactable = false;
             float[] samples = new float[position * clip.channels];
             clip.GetData(samples, 0);
-            spoke = false;
+            hasSpoke = false;
             bytes = await EncodeAsWAV(samples, clip.frequency, clip.channels);
             var res = await OpenAITranscriptionRequest(bytes);
-            if(res.Error != null){
+            if (res.Error != null)
+            {
                 UI.AIMessage.text = "Cannot connect to transcription API";
                 UI.ToggleButtonsOnError();
                 return;
             }
             aIChat.SendChat(res.Text);
-
         }
-
     }
 
 
@@ -243,7 +250,7 @@ public class SpeechRecognition : MonoBehaviour
         CreateAudioResponse response;
 
 
-        using (UnityWebRequest request = UnityWebRequest.Put("http://localhost:3030/api/stt/openai", audio))
+        using (UnityWebRequest request = UnityWebRequest.Put("http://localhost:3030/api/stt/huggingface", audio))
         {
             request.method = "POST";
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();

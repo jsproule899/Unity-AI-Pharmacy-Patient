@@ -20,6 +20,7 @@ public class Scenario
     public string Symptoms { get; set; }
     public string Allergies { get; set; }
     public string Time { get; set; }
+    public string Outcome { get; set; }
     public string AI { get; set; }
     public string Model { get; set; }
     public string TTS { get; set; }

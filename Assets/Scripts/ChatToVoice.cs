@@ -1,17 +1,13 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using ReadyPlayerMe.Core;
-using UnityEngine.UI;
 using System.Threading.Tasks;
-using TMPro;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
-using UnityEngine.Windows.Speech;
+using System;
 
 public class ChatToVoice : MonoBehaviour
 {
     public UIController UI;
-    TMP_Dropdown voiceAPIOption;
     AudioSource avatarAudio;
     VoiceHandler avatarVoiceHandler;
     private bool hasPlayed = false;
@@ -19,12 +15,10 @@ public class ChatToVoice : MonoBehaviour
     private Scenario scenario;
     void Start()
     {
-        voiceAPIOption = GameObject.Find("AI Voice Dropdown").GetComponent<TMP_Dropdown>();
-
+        
         avatarAudio = Config.Avatar.GetComponent<AudioSource>();
         avatarVoiceHandler = Config.Avatar.GetComponent<VoiceHandler>();
         scenario = Config.Scenario;
-        voiceAPIOption.captionText.text = scenario.TTS;
 
     }
 
@@ -61,14 +55,14 @@ public class ChatToVoice : MonoBehaviour
         string audioURI = null;
         AudioClip responseAudio = null;
 
-        if (voiceAPIOption.captionText.text.Equals("Eleven Labs"))
+        if (string.Equals(scenario.TTS, "Eleven Labs", StringComparison.OrdinalIgnoreCase))
         {
             string voice = "IKne3meq5aSn9XLyUdCD";
             ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = voice };
             responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
 
         }
-        else if (voiceAPIOption.captionText.text.Equals("Unreal Speech"))
+        else if (string.Equals(scenario.TTS, "Unreal Speech", StringComparison.OrdinalIgnoreCase))
         {
             UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = scenario.Voice };
             responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));

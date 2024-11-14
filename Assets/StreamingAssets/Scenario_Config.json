@@ -16,6 +16,7 @@
     "Symptoms": "Sneezed and had a runny nose initially, now it is blocked. Also have a sore head. No cough or high temperature",
     "Allergies": "penicillin",
     "Time": "3 days",
+    "Outcome": "treat",
     "AI": "OpenAI",
     "Model": "gpt-4o-mini", 
     "TTS": "Unreal Speech",

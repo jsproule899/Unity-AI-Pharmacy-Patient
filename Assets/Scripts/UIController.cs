@@ -1,8 +1,10 @@
+using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 
 public class UIController : MonoBehaviour
@@ -17,13 +19,11 @@ public class UIController : MonoBehaviour
     public Button startButton;
     public Button treatButton;
     public Button referButton;
-
     public Button switchInputButton;
-    public TextMeshProUGUI switchInputButtonText;
     public Button recordButton;
-    public TextMeshProUGUI recordButtonText;
     public Button sendButton;
-
+    public GameObject outcomeModal;
+    public GameObject issueModal;
 
     void Awake()
     {
@@ -51,13 +51,13 @@ public class UIController : MonoBehaviour
                 break;
             case 1:
                 switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();
-                switchInputButtonText = switchInputButton.GetComponentInChildren<TextMeshProUGUI>();
                 recordButton = GameObject.Find("Record Button").GetComponent<Button>();
-                recordButtonText = recordButton.GetComponentInChildren<TextMeshProUGUI>();
                 KeyboardInput = GameObject.Find("User Input").GetComponent<TMP_InputField>();
                 sendButton = GameObject.Find("Send Button").GetComponent<Button>();
                 userMessage = GameObject.Find("User Message").GetComponent<TextMeshProUGUI>();
                 AIMessage = GameObject.Find("AI Message").GetComponent<TextMeshProUGUI>();
+                outcomeModal = GameObject.Find("Outcome Modal");
+                issueModal = GameObject.Find("Issue Modal");
                 SwitchInput();
                 break;
             case 2:
@@ -115,29 +115,35 @@ public class UIController : MonoBehaviour
         if (KeyboardInput.gameObject.activeSelf && sendButton.gameObject.activeSelf)
         {
             KeyboardInput.gameObject.SetActive(false);
+            KeyboardInput.text = "";
             sendButton.gameObject.SetActive(false);
             recordButton.gameObject.SetActive(true);
-            switchInputButton.Select();
-            switchInputButtonText.text = "Keyboard";
+            switchInputButton.transform.GetChild(0).gameObject.SetActive(true);
+            switchInputButton.transform.GetChild(1).gameObject.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(null);
+
         }
         else if (recordButton.gameObject.activeSelf)
         {
             KeyboardInput.gameObject.SetActive(true);
+
             sendButton.gameObject.SetActive(true);
             recordButton.gameObject.SetActive(false);
+            switchInputButton.transform.GetChild(0).gameObject.SetActive(false);
+            switchInputButton.transform.GetChild(1).gameObject.SetActive(true);
             KeyboardInput.Select();
-            switchInputButtonText.text = "Microphone";
+
         }
 
     }
 
-     public void ToggleButtonsOnError()
+    public void ToggleButtonsOnError()
     {
         recordButton.interactable = !recordButton.interactable;
         sendButton.interactable = !sendButton.interactable;
     }
 
-        public void setButtonColor(Button button, string colour)
+    public void setButtonColor(Button button, string colour)
     {
 
         if (colour.Equals("red"))

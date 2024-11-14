@@ -177,8 +177,7 @@ public class SpeechRecognition : MonoBehaviour
     {
         if (isRecording) return;
         UI.recordButton.animator.SetBool("isRecording", true);
-        // UI.setButtonColor(UI.recordButton, "red");
-        // UI.recordButtonText.text = "Listening...";
+
         clip = Microphone.Start(null, false, 240, 44100);
         isRecording = true;
         audioSource.clip = clip;
@@ -188,8 +187,7 @@ public class SpeechRecognition : MonoBehaviour
     private async void StopRecording()
     {
         UI.recordButton.animator.SetBool("isRecording", false);
-        // UI.recordButtonText.text = "Speak";
-        // UI.setButtonColor(UI.recordButton, "white");
+
 
         int position = Microphone.GetPosition("");
         Microphone.End(null);

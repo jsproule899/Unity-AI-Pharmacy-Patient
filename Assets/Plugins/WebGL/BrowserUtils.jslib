@@ -1,5 +1,12 @@
 BrowserHelper = {
 
+    JS_GetBaseUrl: function () {
+        var url = window.location.origin;
+        var bufferSize = lengthBytesUTF8(url) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(url, buffer, bufferSize);
+        return buffer;
+    }, 
     JS_GetCurrentUrl: function () {
         var url = window.location.href;
         var bufferSize = lengthBytesUTF8(url) + 1;
@@ -21,6 +28,12 @@ BrowserHelper = {
         var buffer = _malloc(bufferSize);
         stringToUTF8(urlParams, buffer, bufferSize);
         return buffer;
+    },
+
+    JS_Redirect: function (urlPtr){
+        url = UTF8ToString(urlPtr);
+        window.location.replace(url);
+        return true;
     },
 
     JS_SetCookie: function (cookieNamePtr, cookieValuePtr, expInDays) {

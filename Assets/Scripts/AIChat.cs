@@ -8,13 +8,12 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
+using System;
 
 public class AIChat : MonoBehaviour
 {
     public UIController UI;
-
     [SerializeField] private ChatToVoice chatToVoice;
-    TMP_Dropdown apiOption;
     public float typingSpeed = 0.05f; // Speed of typing in seconds
     private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private Scenario scenario;
@@ -22,9 +21,9 @@ public class AIChat : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        apiOption = GameObject.Find("AI Dropdown").GetComponent<TMP_Dropdown>();
+
         scenario = Config.Scenario;
-        apiOption.captionText.text = scenario.AI;
+        
         
         string systemPrompt;
         // string systemPrompt = "You are a 25 year old male named Dale. You are a patient in a pharmacy that is looking advice and you are talking to the pharmacist. you aren't feeling well and have the following symptons, headache, nausea, fever. you are frustrated. You are not a pharmacist. Do not offer any advice to the pharmacist. Do not break character. Do not disclose that you are an AI.";
@@ -145,7 +144,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
     }
     public async void SendChat(string voiceMessage = "")
     {
-        string messageToSend = voiceMessage ?? UI.KeyboardInput.text;
+        string messageToSend = voiceMessage.Trim() ?? UI.KeyboardInput.text;
         if (voiceMessage.Length == 0) messageToSend = UI.KeyboardInput.text;
 
         if (messageToSend == null || messageToSend.Length == 0) return;
@@ -155,7 +154,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         UI.AIMessage.text = "";
         ChatMessage userMessage = createUserMessage(messageToSend);
         chatHistory.Add(userMessage);
-        UI.userMessage.text = "Pharmacist: " + userMessage.Content;
+        UI.userMessage.text = userMessage.Content;
 
         UI.KeyboardInput.text = "";
 
@@ -163,7 +162,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
 
         AIChatRespone response = null;
 
-        if (apiOption.captionText.text.Equals("OpenAI"))
+        if (string.Equals(scenario.AI, "OpenAI", StringComparison.OrdinalIgnoreCase))
         {
             response = await AIChatRequest("http://localhost:3030/api/aichat/openai", new CreateChatCompletionRequest
             {
@@ -172,7 +171,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
             });
 
         }
-        else if (apiOption.captionText.text.Equals("Claude"))
+        else if (string.Equals(scenario.AI, "Claude", StringComparison.OrdinalIgnoreCase))
         {
             response = await AIChatRequest("http://localhost:3030/api/aichat/anthropic", new CreateChatCompletionRequest
             {
@@ -187,7 +186,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         if (response?.Message != null)
         {
             await chatToVoice.TextToSpeech(response.Message);
-            StartCoroutine(TypeText(UI.AIMessage, "Patient: " + response.Message));
+            StartCoroutine(TypeText(UI.AIMessage, response.Message));
             var assistantMessage = createAssistantMessage(response.Message);
             chatHistory.Add(assistantMessage);
 

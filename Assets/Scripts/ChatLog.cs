@@ -33,7 +33,7 @@ public class ChatLog
                 writer.WriteLine("----------Scenario-----------");
                 writer.WriteLine(Config.Scenario.Context);
                 //TODO - add more scenario identifiers.
-                
+
             }
 
             return true;
@@ -87,7 +87,7 @@ public class ChatLog
     }
 
 
-    public bool WriteOutcomeToChatLog(string outcome, string justification)
+    public bool WriteOutcomeToChatLog(string outcome, string justification = null, string medication = null, string advice = null)
     {
         try
         {
@@ -95,8 +95,23 @@ public class ChatLog
             {
                 writer.WriteLine("----------Outcome-----------");
                 writer.WriteLine($"The student has chosen to {outcome.ToUpper()} the patient");
-                writer.WriteLine("----------Justification-----------");
-                writer.WriteLine(justification);
+                if (justification != null && justification.Length > 0)
+                {
+                    writer.WriteLine("----------Justification-----------");
+                    writer.WriteLine(justification);
+                }
+
+                if (medication != null && medication.Length > 0)
+                {
+                    writer.WriteLine("----------Presribed Medication-----------");
+                    writer.WriteLine(medication);
+                }
+
+                if (advice != null && advice.Length > 0)
+                {
+                    writer.WriteLine("----------Medication Advice-----------");
+                    writer.WriteLine(advice);
+                }
 
             }
             return true;

@@ -1,21 +1,21 @@
 BrowserHelper = {
 
     JS_GetBaseUrl: function () {
-        var url = window.location.origin;
+        var url = location.origin;
         var bufferSize = lengthBytesUTF8(url) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(url, buffer, bufferSize);
         return buffer;
-    }, 
+    },
     JS_GetCurrentUrl: function () {
-        var url = window.location.href;
+        var url = location.href;
         var bufferSize = lengthBytesUTF8(url) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(url, buffer, bufferSize);
         return buffer;
     },
     JS_GetUrlPath: function () {
-        var urlPath = window.location.pathname;
+        var urlPath = location.pathname;
         var bufferSize = lengthBytesUTF8(urlPath) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(urlPath, buffer, bufferSize);
@@ -23,16 +23,16 @@ BrowserHelper = {
     },
 
     JS_GetUrlParams: function () {
-        var urlParams = window.location.search;
+        var urlParams = location.search;
         var bufferSize = lengthBytesUTF8(urlParams) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(urlParams, buffer, bufferSize);
         return buffer;
     },
 
-    JS_Redirect: function (urlPtr){
+    JS_Redirect: function (urlPtr) {
         url = UTF8ToString(urlPtr);
-        window.location.replace(url);
+        location.href = url;
         return true;
     },
 
@@ -70,7 +70,45 @@ BrowserHelper = {
         cookieName = UTF8ToString(cookieNamePtr);
         document.cookie = cookieName + '=; Max-Age=-99999999;';
         return true;
+    },
+
+    JS_TextFile_CreateObject: function (initialTextPtr) {
+        if (initialTextPtr) {
+            initialText = UTF8ToString(initialTextPtr);
+        } else {
+            initialText = "\n";
+        }
+
+        myInstance.textData = {
+            initialContent: initialText +"\n",
+            appendedContent: []
+        };
+
+        myInstance.textData.initialContent = initialText;
+    },
+    JS_TextFile_Append: function (textToAppendPtr) {
+        myInstance.textData.appendedContent.push(UTF8ToString(textToAppendPtr));
+    },
+    JS_TextFile_CreateBlob: function (filenamePtr) {
+
+        const blob = new Blob([myInstance.textData.initialContent + myInstance.textData.appendedContent.join('\n')], { type: 'text/plain' });
+
+        // Create an Object URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = UTF8ToString(filenamePtr) + '.txt';
+
+        // Trigger the download by simulating a click
+        link.click();
+
+        // Clean up the Object URL after download
+        URL.revokeObjectURL(url);
+
     }
+
+
 
 }
 mergeInto(LibraryManager.library, BrowserHelper);

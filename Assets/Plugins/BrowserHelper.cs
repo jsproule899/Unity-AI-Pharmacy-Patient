@@ -22,5 +22,12 @@ namespace JSBrowserUtilities
         public static extern string JS_GetCookie(string cookieName);
         [DllImport("__Internal")]
         public static extern bool JS_DeleteCookie(string cookieName);
+
+         [DllImport("__Internal")]
+        public static extern bool JS_TextFile_CreateObject(string initialText = null);
+        [DllImport("__Internal")]
+        public static extern bool JS_TextFile_Append(string textToAppend);
+        [DllImport("__Internal")]
+        public static extern bool JS_TextFile_CreateBlob(string filename);
     }
 }

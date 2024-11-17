@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using OpenAI;
 using UnityEngine;
+using JSBrowserUtilities;
 
 public class ChatLog
 {
@@ -10,6 +11,7 @@ public class ChatLog
 
     public ChatLog(string filename)
     {
+#if UNITY_EDITOR
         this.filepath = Application.persistentDataPath + "/" + filename + ".txt";
 
         if (File.Exists(filepath))
@@ -21,12 +23,17 @@ public class ChatLog
             this.filepath = Application.persistentDataPath + $"/{filename}_{timestamp}.txt";
         }
         File.CreateText(filepath).Close();
+
+#elif !UNITY_EDITOR && UNITY_WEBGL
+        BrowserHelper.JS_TextFile_CreateObject();
+#endif
     }
 
     public bool WriteConfigToChatLog()
     {
         try
         {
+#if UNITY_EDITOR
             using (StreamWriter writer = File.AppendText(filepath))
             {
                 writer.WriteLine("Student: " + Config.Student.Id);
@@ -35,6 +42,11 @@ public class ChatLog
                 //TODO - add more scenario identifiers.
 
             }
+#elif !UNITY_EDITOR && UNITY_WEBGL
+                BrowserHelper.JS_TextFile_Append("Student: " + Config.Student.Id);
+                BrowserHelper.JS_TextFile_Append("----------Scenario-----------");
+                BrowserHelper.JS_TextFile_Append(Config.Scenario.Context);
+#endif
 
             return true;
         }
@@ -50,6 +62,7 @@ public class ChatLog
     {
         try
         {
+#if UNITY_EDITOR
             using (StreamWriter writer = File.AppendText(filepath))
             {
 
@@ -74,6 +87,23 @@ public class ChatLog
                 }
 
             }
+#elif !UNITY_EDITOR && UNITY_WEBGL
+            foreach (ChatMessage message in chatHistory)
+                {
+                    switch (message.Role)
+                    {
+                        case "assistant":                            
+                             BrowserHelper.JS_TextFile_Append("Patient: " + message.Content);
+                            break;
+                        case "user":
+                            BrowserHelper.JS_TextFile_Append("Pharmacist: " + message.Content);
+                            break;
+                        default:                            
+                            BrowserHelper.JS_TextFile_Append("-----------Conversation------------");
+                            break;
+                    }
+                }
+#endif
             return true;
 
         }
@@ -91,6 +121,7 @@ public class ChatLog
     {
         try
         {
+#if UNITY_EDITOR
             using (StreamWriter writer = File.AppendText(filepath))
             {
                 writer.WriteLine("----------Outcome-----------");
@@ -112,8 +143,30 @@ public class ChatLog
                     writer.WriteLine("----------Medication Advice-----------");
                     writer.WriteLine(advice);
                 }
-
             }
+#elif !UNITY_EDITOR && UNITY_WEBGL
+BrowserHelper.JS_TextFile_Append("----------Outcome-----------");
+BrowserHelper.JS_TextFile_Append($"The student has chosen to {outcome.ToUpper()} the patient");
+                if (justification != null && justification.Length > 0)
+                {
+                   BrowserHelper.JS_TextFile_Append("----------Justification-----------");
+                    BrowserHelper.JS_TextFile_Append(justification);
+                }
+
+                if (medication != null && medication.Length > 0)
+                {
+                    BrowserHelper.JS_TextFile_Append("----------Presribed Medication-----------");
+                    BrowserHelper.JS_TextFile_Append(medication);
+                }
+
+                if (advice != null && advice.Length > 0)
+                {
+                    BrowserHelper.JS_TextFile_Append("----------Medication Advice-----------");
+                    BrowserHelper.JS_TextFile_Append(advice);
+                }
+
+            
+#endif
             return true;
         }
         catch (Exception err)

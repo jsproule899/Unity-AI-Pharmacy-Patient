@@ -21,6 +21,7 @@ public class AIChat : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
 
         scenario = Config.Scenario;
         
@@ -45,6 +46,8 @@ MEDICAL BACKGROUND:
 - Recently Added Medications: {scenario.AdditionalMeds}
 
 CONTEXT: {scenario.Context}
+ADDITIONAL INFO: {scenario.AdditionalInfo}
+EMOTION: {scenario.Emotion}
 
 ROLEPLAY RULES:
 1. Respond naturally as the patient, using first-person perspective without narration or action descriptions
@@ -104,6 +107,8 @@ MEDICAL BACKGROUND:
 - Recently Added Medications: {scenario.AdditionalMeds}
 
 CONTEXT: {scenario.Context}
+ADDITIONAL INFO: {scenario.AdditionalInfo}
+EMOTION: {scenario.Emotion}
 
 ROLEPLAY RULES:
 1. Respond naturally as the patient, using first-person perspective without narration or action descriptions
@@ -164,7 +169,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
 
         if (string.Equals(scenario.AI, "OpenAI", StringComparison.OrdinalIgnoreCase))
         {
-            response = await AIChatRequest("http://localhost:3030/api/aichat/openai", new CreateChatCompletionRequest
+            response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/openai", new CreateChatCompletionRequest
             {
                 Model = scenario.Model,
                 Messages = chatHistory
@@ -173,7 +178,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         }
         else if (string.Equals(scenario.AI, "Claude", StringComparison.OrdinalIgnoreCase))
         {
-            response = await AIChatRequest("http://localhost:3030/api/aichat/anthropic", new CreateChatCompletionRequest
+            response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/anthropic", new CreateChatCompletionRequest
             {
                 Model = scenario.Model,
                 Messages = chatHistory

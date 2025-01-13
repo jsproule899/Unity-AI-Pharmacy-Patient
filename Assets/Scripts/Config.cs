@@ -2,6 +2,9 @@ using UnityEngine;
 using TMPro;
 using JSBrowserUtilities;
 using System.Linq;
+using Unity.VisualScripting;
+using System;
+using System.Threading.Tasks;
 
 
 public class Config : MonoBehaviour
@@ -17,6 +20,7 @@ public class Config : MonoBehaviour
     [SerializeField]
     private TMP_Text context;
 
+    public static string ApiBaseUrl = "";
 
     public static bool AvatarIsLoaded = false;
     public static bool ConfigIsLoaded = false;
@@ -26,22 +30,34 @@ public class Config : MonoBehaviour
     {
         if (!ConfigIsLoaded)
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             string[] urlPath = BrowserHelper.JS_GetUrlPath().Split("/");
             string scenarioId = urlPath.Last();
-            #else
+#else
             string scenarioId = "";
-            #endif
+#endif
+
 
             Avatar = GameObject.FindWithTag("Avatar");
-            Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + $"/Scenario_Config{scenarioId}.json");
+            // Scenario = await Scenario.LoadConfig(Application.streamingAssetsPath + $"/Scenario_Config{scenarioId}.json");
+            // Wait for the ApiBaseUrl to be set before continuing
+            while (string.IsNullOrEmpty(ApiBaseUrl))
+            {
+                await Task.Yield(); // This will yield control and check again during the next frame
+            }
+
+            Debug.Log("API BASE URL SET BEFORE FETCH");
+            Debug.Log("API BASE URL SET BEFORE FETCH");
+            Scenario = await Scenario.LoadConfig(ApiBaseUrl + $"/api/scenario/{scenarioId}");
+
             context = GameObject.Find("Context").GetComponent<TMP_Text>();
             context.text = Scenario.Context;
             ConfigIsLoaded = true;
+
         }
 
 
-        
+
 
 
     }
@@ -68,6 +84,13 @@ public class Config : MonoBehaviour
         Destroy(oldAvatar);
         AvatarIsLoaded = true;
         return true;
+
+    }
+
+    public void SetApiBaseUrl(string apiBaseUrl)
+    {
+        ApiBaseUrl = apiBaseUrl;
+        Debug.Log($"API Base URL set to {ApiBaseUrl}");
 
     }
 

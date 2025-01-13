@@ -3,9 +3,6 @@
     "Name": "Mr Richardson",
     "Self": true,
     "Other_Person": {
-        "Name": "Keith",
-        "Age": "35",
-        "Relationship": "Son"
     },
     "Age": "62",
     "Gender": "Male",

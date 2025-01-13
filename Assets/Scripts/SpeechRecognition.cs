@@ -248,7 +248,7 @@ public class SpeechRecognition : MonoBehaviour
         CreateAudioResponse response;
 
 
-        using (UnityWebRequest request = UnityWebRequest.Put("http://localhost:3030/api/stt/huggingface", audio))
+        using (UnityWebRequest request = UnityWebRequest.Put(Config.ApiBaseUrl+"/api/stt/huggingface", audio))
         {
             request.method = "POST";
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();

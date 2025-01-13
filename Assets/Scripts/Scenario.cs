@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class Scenario
 {
-    public int Id { get; set; }
+    public string _id { get; set; }
     public string Context { get; set; }
     public string Name { get; set; }
 
@@ -20,11 +20,14 @@ public class Scenario
     public string Symptoms { get; set; }
     public string Allergies { get; set; }
     public string Time { get; set; }
+    public string AdditionalInfo {get; set; }
+    public string Emotion {get; set; }
     public string Outcome { get; set; }
     public string AI { get; set; }
     public string Model { get; set; }
     public string TTS { get; set; }
     public string Voice { get; set; }
+    public string Avatar { get; set; }
 
     public static async Task<Scenario> LoadConfig(string config)
     {

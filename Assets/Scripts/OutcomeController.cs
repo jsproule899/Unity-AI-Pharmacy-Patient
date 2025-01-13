@@ -23,7 +23,7 @@ public class OutcomeController : MonoBehaviour
         #if UNITY_WEBGL
         string timestamp = DateTime.Now.ToString("yyyyddMM_HHmmss");
         BrowserHelper.JS_TextFile_CreateBlob($"{Config.Student.Id}_chatlog_{timestamp}");
-        StartCoroutine(DelayedRedirect(2));
+        // StartCoroutine(DelayedRedirect(2));
         #endif
     }
 

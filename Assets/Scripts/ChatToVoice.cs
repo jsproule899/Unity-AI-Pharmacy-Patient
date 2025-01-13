@@ -59,14 +59,14 @@ public class ChatToVoice : MonoBehaviour
         {
             string voice = "IKne3meq5aSn9XLyUdCD";
             ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = voice };
-            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
+            responseAudio = await VoicePostRequest(Config.ApiBaseUrl+"/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
 
         }
         else if (string.Equals(scenario.TTS, "Unreal Speech", StringComparison.OrdinalIgnoreCase))
         {
             UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = scenario.Voice };
-            responseAudio = await VoicePostRequest("http://localhost:3030/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
-            // audioURI =  await UnrealSpeechUriRequest("http://localhost:3030/api/tts/unrealspeech/speech", body);
+            responseAudio = await VoicePostRequest(Config.ApiBaseUrl+"/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
+            // audioURI =  await UnrealSpeechUriRequest(Config.ApiBaseUrl+"/api/tts/unrealspeech/speech", body);
         }
 
         if (audioURI != null)

@@ -36,7 +36,7 @@ public class UIController : MonoBehaviour
                 startButton.onClick.AddListener(() =>
                 {
                     Config.Student = new Student(studentNumInput.text);
-                    Config.ChatLog = new ChatLog($"{Config.Student.Id}_{Config.Scenario.Id}");
+                    Config.ChatLog = new ChatLog($"{Config.Student.Id}_{Config.Scenario._id}");
                     Config.ChatLog.WriteConfigToChatLog();
 
 

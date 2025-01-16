@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ModalSystem : MonoBehaviour
 {
@@ -25,9 +26,9 @@ public void Hide()
     UI.recordButton.interactable = true;
 }
 
-public TMP_InputField[] GetInputs()
+public InputField[] GetInputs()
 {
-    return modal.GetComponentsInChildren<TMP_InputField>();
+    return modal.GetComponentsInChildren<InputField>();
 }
 
 public TMP_Dropdown[] GetDropdowns()
@@ -48,7 +49,7 @@ public void ActivateInput(string name)
 
 public void ClearInputs()
 {
-    modal.GetComponentsInChildren<TMP_InputField>().ToList().ForEach(input => input.text = "");
+    modal.GetComponentsInChildren<InputField>().ToList().ForEach(input => input.text = "");
 
 }
 

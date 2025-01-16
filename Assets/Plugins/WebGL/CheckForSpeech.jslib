@@ -66,8 +66,8 @@ var SpeechDetector = {
             stream.analyser = sdCtx.audioContext.createAnalyser();
             stream.filter = sdCtx.audioContext.createBiquadFilter();
             stream.filter.type = 'bandpass';
-            stream.filter.frequency.setValueAtTime(1500, sdCtx.audioContext.currentTime); // Center frequency for speech
-            stream.filter.Q.setValueAtTime(1, sdCtx.audioContext.currentTime); // Adjust bandwidth
+            stream.filter.frequency.setValueAtTime(2000, sdCtx.audioContext.currentTime); // Center frequency for speech
+            stream.filter.Q.setValueAtTime(1.5, sdCtx.audioContext.currentTime); // Adjust bandwidth
             stream.analyser.smoothingTimeConstant = 0.5;
 
 

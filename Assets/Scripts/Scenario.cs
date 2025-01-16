@@ -26,6 +26,7 @@ public class Scenario
     public string AI { get; set; }
     public string Model { get; set; }
     public string TTS { get; set; }
+    public string STT { get; set; } 
     public string Voice { get; set; }
     public string Avatar { get; set; }
 

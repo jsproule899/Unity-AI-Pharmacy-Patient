@@ -10,10 +10,10 @@ using UnityEngine.UI;
 public class UIController : MonoBehaviour
 {
 
-    public TMP_InputField studentNumInput;
-    public TMP_InputField justificationInput;
+    public InputField studentNumInput;
+    public InputField justificationInput;
 
-    public TMP_InputField KeyboardInput;
+    public InputField KeyboardInput;
     public TextMeshProUGUI userMessage;
     public TextMeshProUGUI AIMessage;
     public Button startButton;
@@ -31,7 +31,7 @@ public class UIController : MonoBehaviour
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 0:
-                studentNumInput = GameObject.Find("Student Num Input").GetComponent<TMP_InputField>();
+                studentNumInput = GameObject.Find("Student Num Input").GetComponent<InputField>();
                 startButton = GameObject.Find("Start Button").GetComponent<Button>();
                 startButton.onClick.AddListener(() =>
                 {
@@ -52,7 +52,7 @@ public class UIController : MonoBehaviour
             case 1:
                 switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();
                 recordButton = GameObject.Find("Record Button").GetComponent<Button>();
-                KeyboardInput = GameObject.Find("User Input").GetComponent<TMP_InputField>();
+                KeyboardInput = GameObject.Find("User Input").GetComponent<InputField>();
                 sendButton = GameObject.Find("Send Button").GetComponent<Button>();
                 userMessage = GameObject.Find("User Message").GetComponent<TextMeshProUGUI>();
                 AIMessage = GameObject.Find("AI Message").GetComponent<TextMeshProUGUI>();
@@ -61,7 +61,7 @@ public class UIController : MonoBehaviour
                 SwitchInput();
                 break;
             case 2:
-                justificationInput = GameObject.Find("Justification Input").GetComponent<TMP_InputField>();
+                justificationInput = GameObject.Find("Justification Input").GetComponent<InputField>();
                 treatButton = GameObject.Find("Treat Button").GetComponent<Button>();
                 referButton = GameObject.Find("Refer Button").GetComponent<Button>();
                 justificationInput.Select();

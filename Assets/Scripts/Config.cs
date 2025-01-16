@@ -28,6 +28,11 @@ public class Config : MonoBehaviour
 
     async void Awake()
     {
+#if !UNITY_EDITOR && UNITY_WEBGL
+        // disable WebGLInput.captureAllKeyboardInput so elements in web page can handle keyboard inputs
+        WebGLInput.captureAllKeyboardInput = false;
+#endif
+
         if (!ConfigIsLoaded)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -46,7 +51,6 @@ public class Config : MonoBehaviour
                 await Task.Yield(); // This will yield control and check again during the next frame
             }
 
-            Debug.Log("API BASE URL SET BEFORE FETCH");
             Debug.Log("API BASE URL SET BEFORE FETCH");
             Scenario = await Scenario.LoadConfig(ApiBaseUrl + $"/api/scenario/{scenarioId}");
 

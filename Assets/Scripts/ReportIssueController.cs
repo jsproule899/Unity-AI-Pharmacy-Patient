@@ -14,7 +14,7 @@ public class ReportIssueController : MonoBehaviour
 {
 
     public ModalSystem modal;
-    private static string url = "/api/issue";
+    private static string url = $"{Config.ApiBaseUrl}/api/issue";
 
 
 
@@ -40,7 +40,8 @@ public class ReportIssueController : MonoBehaviour
         string[] urlPath = BrowserHelper.JS_GetUrlPath().Split("/");
         issue.ScenarioId = urlPath.Last();
 #endif
-        issue.Category = modal.GetDropdowns()[0].itemText.text;
+        int i = modal.GetDropdowns()[0].value;
+        issue.Category = modal.GetDropdowns()[0].options[i].text;
         issue.Details = modal.GetInputs()[0].text;
         _ = PostIssue(issue);
     }

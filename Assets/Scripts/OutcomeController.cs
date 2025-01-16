@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using JSBrowserUtilities;
 using ReadyPlayerMe.Core.WebView;
-using TMPro;
+
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OutcomeController : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class OutcomeController : MonoBehaviour
 
     public void saveToLog()
     {
-        TMP_InputField[] inputs = modal.GetInputs();
+        InputField[] inputs = modal.GetInputs();
 
         switch (inputs.Length)
         {

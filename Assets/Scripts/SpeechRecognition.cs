@@ -6,6 +6,9 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using System.Linq;
 using WebGLAudioData;
+using System.Collections;
+using System.Collections.Generic;
+
 
 public class SpeechRecognition : MonoBehaviour
 {
@@ -17,6 +20,11 @@ public class SpeechRecognition : MonoBehaviour
     private AudioSource audioSource;
     private float[] clipSampleData = new float[8192];
     private float thresholdDb = -80f;
+    private bool isSetThresholdRunning = false;
+
+    private float[] speechHistory = new float[3];
+
+    private int speechIndex = 0;
     private bool isSpeaking = false;
     private bool hasSpoke = false;
     private bool isListening = false;
@@ -39,9 +47,10 @@ public class SpeechRecognition : MonoBehaviour
 
     private void Update()
     {
-        if (!thresholdSet)
+        if (!thresholdSet && !isSetThresholdRunning)
         {
-            SetSpeechThreshold();
+            isSetThresholdRunning = true;
+            StartCoroutine(SetSpeechThreshold());
         }
 
         // Check for the push-to-talk key (Space key)
@@ -107,27 +116,49 @@ public class SpeechRecognition : MonoBehaviour
         toggleRecording();
     }
 
-    private void SetSpeechThreshold()
+    private IEnumerator SetSpeechThreshold()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        SpeechDetector.checkForSpeech(250);
-        if(speechDetector.maxVolume > -144.0f)
+        
+    List<float> maxVolumeReadings = new List<float>();
+    int numReadings = 3;
+    float delayBetweenReadings = 0.5f;
+
+    for (int i = 0; i < numReadings; i++)
+    {
+        SpeechDetector.checkForSpeech(250);  
+        maxVolumeReadings.Add(speechDetector.maxVolume);
+
+        
+        yield return new WaitForSeconds(delayBetweenReadings);
+    }
+
+    
+    float averageMaxVolume = maxVolumeReadings.Average();
+        if(averageMaxVolume > -144.0f)
         {
-            thresholdDb = speechDetector.maxVolume + 30; 
+            thresholdDb = averageMaxVolume + 20; 
             Debug.Log($"Threshold is now set to : {thresholdDb}");
             thresholdSet = true;
             SpeechDetector.StopListening();
+        }else{
+        Debug.Log("Average maxVolume is too low to set threshold.");
         }
 #else
         thresholdDb = -80;
         Debug.Log($"Threshold is now set to : {thresholdDb}");
         thresholdSet = true;
+        yield break;
 #endif
+        isSetThresholdRunning = false;
     }
+
+
+
+
 
     private void ListeningForSpeech()
     {
-
         if (!isListening)
         {
 
@@ -136,19 +167,21 @@ public class SpeechRecognition : MonoBehaviour
 #endif
             return;
         }
-
         float currentVolumeDb;
 #if UNITY_EDITOR
         audioSource.GetSpectrumData(clipSampleData, 0, FFTWindow.Rectangular);
         currentVolumeDb = LinearToDecibel(clipSampleData.Average());
+        setSpeechHistory(currentVolumeDb);
 #endif
 #if UNITY_WEBGL && !UNITY_EDITOR
             SpeechDetector.checkForSpeech(250);
-            currentVolumeDb = speechDetector.maxVolume;
-#endif
+            setSpeechHistory(speechDetector.maxVolume);
 
-        // Debug.Log($"From unity: {currentVolumeDb}");
-        if (currentVolumeDb > thresholdDb && isRecording)
+            //currentVolumeDb = speechDetector.maxVolume;
+#endif
+        float averageSpeechHistory = speechHistory.Where(x => x != 0).Average();
+        Debug.Log($@"Average volume: {averageSpeechHistory}");
+        if ( averageSpeechHistory > thresholdDb && isRecording)
         {
             isSpeaking = true;
             hasSpoke = true;
@@ -157,6 +190,12 @@ public class SpeechRecognition : MonoBehaviour
         {
             isSpeaking = false;
         }
+    }
+
+    private void setSpeechHistory(float volume)
+    {
+        speechHistory[speechIndex] = volume;
+        speechIndex = (speechIndex + 1) % speechHistory.Length;
     }
 
 
@@ -248,7 +287,7 @@ public class SpeechRecognition : MonoBehaviour
         CreateAudioResponse response;
 
 
-        using (UnityWebRequest request = UnityWebRequest.Put(Config.ApiBaseUrl+"/api/stt/huggingface", audio))
+        using (UnityWebRequest request = UnityWebRequest.Put($"{Config.ApiBaseUrl}/api/stt/{Config.Scenario.STT ?? "openai" }", audio))
         {
             request.method = "POST";
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();

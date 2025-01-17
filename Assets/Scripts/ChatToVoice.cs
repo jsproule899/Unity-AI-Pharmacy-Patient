@@ -57,8 +57,8 @@ public class ChatToVoice : MonoBehaviour
 
         if (string.Equals(scenario.TTS, "Eleven Labs", StringComparison.OrdinalIgnoreCase))
         {
-            string voice = "IKne3meq5aSn9XLyUdCD";
-            ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = voice };
+            
+            ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = scenario.Voice };
             responseAudio = await VoicePostRequest(Config.ApiBaseUrl+"/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
 
         }

@@ -73,10 +73,10 @@ public class ReportIssueController : MonoBehaviour
 
 public struct ReportedIssue
 {
-    [JsonProperty(PropertyName = "scenario")]
+    [JsonProperty(PropertyName = "Scenario")]
     public string ScenarioId { get; set; }
-    [JsonProperty(PropertyName = "category")]
+    [JsonProperty(PropertyName = "Category")]
     public string Category { get; set; }
-    [JsonProperty(PropertyName = "details")]
+    [JsonProperty(PropertyName = "Details")]
     public string Details { get; set; }
 }

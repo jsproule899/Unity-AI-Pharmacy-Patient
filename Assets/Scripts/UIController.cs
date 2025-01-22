@@ -42,12 +42,12 @@ public class UIController : MonoBehaviour
 
                 });
 
-                studentNumInput.Select();
-
                 studentNumInput.onSubmit.AddListener((text) =>
                 {
                     if (startButton.interactable) startButton.onClick.Invoke();
                 });
+
+                studentNumInput.Select();
                 break;
             case 1:
                 switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();

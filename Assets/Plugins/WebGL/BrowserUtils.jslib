@@ -89,24 +89,33 @@ BrowserHelper = {
     JS_TextFile_Append: function (textToAppendPtr) {
         myInstance.textData.appendedContent.push(UTF8ToString(textToAppendPtr));
     },
-    JS_TextFile_CreateBlob: function (filenamePtr) {
+    JS_TextFile_CreateBlob: async function (filenamePtr) {
+
+        filename = UTF8ToString(filenamePtr) + '.txt'
 
         const blob = new Blob([myInstance.textData.initialContent + myInstance.textData.appendedContent.join('\n')], { type: 'text/plain' });
+
+        try{
+            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text() );
+        }catch(e){
+            console.warn("failed to dispatch upload event");
+        }
 
         // Create an Object URL for the Blob
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = UTF8ToString(filenamePtr) + '.txt';
+        link.download = filename;
 
         // Trigger the download by simulating a click
         link.click();
 
         // Clean up the Object URL after download
         URL.revokeObjectURL(url);
-
+        
     }
+    
 
 
 

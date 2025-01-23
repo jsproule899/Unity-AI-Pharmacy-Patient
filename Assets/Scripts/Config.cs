@@ -76,15 +76,8 @@ public class Config : MonoBehaviour
     {
         GameObject oldAvatar = GameObject.FindWithTag("Avatar");
 
-        if (Scenario.Gender == "Female")
-        {
-            Avatar = Instantiate(Resources.Load("Female_Avatar"), oldAvatar.transform.position, oldAvatar.transform.rotation, oldAvatar.transform.parent) as GameObject;
+        Avatar = Instantiate(Resources.Load(Scenario.Avatar), oldAvatar.transform.position, oldAvatar.transform.rotation, oldAvatar.transform.parent) as GameObject;
 
-        }
-        else
-        {
-            Avatar = Instantiate(Resources.Load("Male_Avatar"), oldAvatar.transform.position, oldAvatar.transform.rotation, oldAvatar.transform.parent) as GameObject;
-        }
         Destroy(oldAvatar);
         AvatarIsLoaded = true;
         return true;

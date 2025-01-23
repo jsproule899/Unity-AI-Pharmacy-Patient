@@ -165,26 +165,11 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
 
 
 
-        AIChatRespone response = null;
-
-        if (string.Equals(scenario.AI, "OpenAI", StringComparison.OrdinalIgnoreCase))
-        {
-            response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/openai", new CreateChatCompletionRequest
+        AIChatRespone response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/"+scenario.AI.ToLower(), new CreateChatCompletionRequest
             {
                 Model = scenario.Model,
                 Messages = chatHistory
             });
-
-        }
-        else if (string.Equals(scenario.AI, "Claude", StringComparison.OrdinalIgnoreCase))
-        {
-            response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/anthropic", new CreateChatCompletionRequest
-            {
-                Model = scenario.Model,
-                Messages = chatHistory
-            });
-
-        }
 
         
 

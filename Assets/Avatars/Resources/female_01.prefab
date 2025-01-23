@@ -677,7 +677,7 @@ GameObject:
   - component: {fileID: -3400430967565295957}
   - component: {fileID: 8627771146426707388}
   m_Layer: 0
-  m_Name: Female_Avatar
+  m_Name: female_01
   m_TagString: Avatar
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

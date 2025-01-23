@@ -1108,7 +1108,7 @@ GameObject:
   - component: {fileID: -4025087899563955308}
   - component: {fileID: 8391101490718832148}
   m_Layer: 0
-  m_Name: Male_Avatar
+  m_Name: male_01
   m_TagString: Avatar
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

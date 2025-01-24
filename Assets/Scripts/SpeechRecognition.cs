@@ -8,6 +8,7 @@ using System.Linq;
 using WebGLAudioData;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 
 public class SpeechRecognition : MonoBehaviour
@@ -43,6 +44,9 @@ public class SpeechRecognition : MonoBehaviour
     {
         UI.recordButton.onClick.AddListener(ToggleListening);
 
+        //Workaround for Safari Microphone bug
+         SafariMicrophoneInitialise();
+
     }
 
     private void Update()
@@ -77,12 +81,19 @@ public class SpeechRecognition : MonoBehaviour
             StartRecording();
         }
 
-        if ((isRecording && hasSpoke && !isSpeaking && !isPushingToTalk) || (isRecording && Microphone.GetPosition("") >= clip.samples))
+        if ((isRecording && hasSpoke && !isSpeaking && !isPushingToTalk) || (isRecording && clip != null && Microphone.GetPosition(null) >= clip.samples))
         {
 
             StopRecording();
         }
 
+    }
+
+    //workaround for safari webgl microphone bug
+    private void SafariMicrophoneInitialise()
+    {
+        StartRecording();
+        Invoke("StopRecording", 0.5f);
     }
 
 
@@ -144,13 +155,15 @@ public class SpeechRecognition : MonoBehaviour
         }else{
         Debug.Log("Average maxVolume is too low to set threshold.");
         }
+        isSetThresholdRunning = false;
 #else
         thresholdDb = -80;
         Debug.Log($"Threshold is now set to : {thresholdDb}");
         thresholdSet = true;
+        isSetThresholdRunning = false;
         yield break;
 #endif
-        isSetThresholdRunning = false;
+
     }
 
 
@@ -181,7 +194,7 @@ public class SpeechRecognition : MonoBehaviour
 #endif
         float averageSpeechHistory = speechHistory.Where(x => x != 0).Average();
         Debug.Log($@"Average volume: {averageSpeechHistory}");
-        if ( averageSpeechHistory > thresholdDb && isRecording)
+        if (averageSpeechHistory > thresholdDb && isRecording)
         {
             isSpeaking = true;
             hasSpoke = true;
@@ -218,9 +231,9 @@ public class SpeechRecognition : MonoBehaviour
         UI.recordButton.animator.SetBool("isRecording", true);
 
         clip = Microphone.Start(null, false, 240, 44100);
-        isRecording = true;
         audioSource.clip = clip;
         audioSource.Play();
+        isRecording = true;
     }
 
     private async void StopRecording()
@@ -232,7 +245,7 @@ public class SpeechRecognition : MonoBehaviour
         Microphone.End(null);
         isRecording = false;
 
-        if (hasSpoke)
+        if (hasSpoke && clip != null)
         {
             UI.sendButton.interactable = false;
             UI.recordButton.interactable = false;
@@ -287,7 +300,7 @@ public class SpeechRecognition : MonoBehaviour
         CreateAudioResponse response;
 
 
-        using (UnityWebRequest request = UnityWebRequest.Put($"{Config.ApiBaseUrl}/api/stt/{Config.Scenario.STT ?? "openai" }", audio))
+        using (UnityWebRequest request = UnityWebRequest.Put($"{Config.ApiBaseUrl}/api/stt/{Config.Scenario.STT ?? "openai"}", audio))
         {
             request.method = "POST";
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();

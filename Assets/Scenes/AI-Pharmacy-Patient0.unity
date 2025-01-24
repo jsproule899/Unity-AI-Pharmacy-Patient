@@ -566,7 +566,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2118616356}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
-        m_MethodName: Show
+        m_MethodName: ClearInputs
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -578,7 +578,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2118616356}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
-        m_MethodName: ClearInputs
+        m_MethodName: Show
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5924,6 +5924,18 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
+        m_MethodName: ClearInputs
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8827395804251152272}
+        m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Show
         m_Mode: 1
         m_Arguments:
@@ -5956,18 +5968,6 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Advice
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 8827395804251152272}
-        m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
-        m_MethodName: ClearInputs
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 971769312}
@@ -8432,7 +8432,7 @@ Animator:
   m_GameObject: {fileID: 1590445480}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: be12aaf6556f596489bebfcd82b719db, type: 2}
+  m_Controller: {fileID: 9100000, guid: f2399ebf6c5267f4e9445d69292be018, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -12991,6 +12991,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 8827395804251152272}
+        m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
+        m_MethodName: ClearInputs
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &2972963575477553061
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15140,6 +15152,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 8827395804251152272}
+        m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
+        m_MethodName: ClearInputs
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Show

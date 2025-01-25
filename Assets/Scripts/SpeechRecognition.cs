@@ -32,6 +32,9 @@ public class SpeechRecognition : MonoBehaviour
     private bool thresholdSet = false;
     private bool isPushingToTalk = false;
 
+    private Coroutine holdDetectionCoroutine;
+    private float holdThreshold = 1.0f; // Time in seconds to consider a hold
+
     private SpeechDetector speechDetector;
 
 
@@ -42,10 +45,9 @@ public class SpeechRecognition : MonoBehaviour
     }
     void Start()
     {
-        UI.recordButton.onClick.AddListener(ToggleListening);
 
         //Workaround for Safari Microphone bug
-         SafariMicrophoneInitialise();
+        SafariMicrophoneInitialise();
 
     }
 
@@ -60,20 +62,12 @@ public class SpeechRecognition : MonoBehaviour
         // Check for the push-to-talk key (Space key)
         if (Input.GetKeyDown(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
-            isPushingToTalk = true;
-            ToggleListening(); // Start listening when the key is pressed
+            StartPushToTalk();
         }
 
         if (Input.GetKeyUp(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
-            isPushingToTalk = false;
-            // Stop listening when the key is released
-            if (isListening)
-            {
-                hasSpoke = true;
-                isSpeaking = false;
-                ToggleListening();
-            }
+            StopPushToTalk();
         }
 
         if (!isRecording && !hasSpoke && isListening && UI.recordButton.interactable)
@@ -83,10 +77,59 @@ public class SpeechRecognition : MonoBehaviour
 
         if ((isRecording && hasSpoke && !isSpeaking && !isPushingToTalk) || (isRecording && clip != null && Microphone.GetPosition(null) >= clip.samples))
         {
-
             StopRecording();
         }
 
+    }
+
+
+    public void OnRecordButtonPointerDown()
+    {
+        // Start checking for hold
+        holdDetectionCoroutine = StartCoroutine(HoldDetection());
+    }
+
+    private IEnumerator HoldDetection()
+    {
+        yield return new WaitForSeconds(holdThreshold);
+
+        // If this coroutine completes, it's a hold: start push-to-talk
+        StartPushToTalk();
+        holdDetectionCoroutine = null;
+    }
+
+    public void OnRecordButtonPointerUp()
+    {
+        if (holdDetectionCoroutine != null)
+        {
+            // Hold detection was not completed: treat as click
+            StopCoroutine(holdDetectionCoroutine);
+            holdDetectionCoroutine = null;
+            ToggleListening();
+        }
+        else
+        {
+            // Hold was detected: stop push-to-talk
+            StopPushToTalk();
+        }
+    }
+
+    private void StartPushToTalk()
+    {
+        isPushingToTalk = true;
+        ToggleListening(); // Start listening when the key is pressed
+    }
+
+    private void StopPushToTalk()
+    {
+        isPushingToTalk = false;
+        // Stop listening when the key is released
+        if (isListening)
+        {
+            hasSpoke = true;
+            isSpeaking = false;
+            ToggleListening();
+        }
     }
 
     //workaround for safari webgl microphone bug
@@ -165,9 +208,6 @@ public class SpeechRecognition : MonoBehaviour
 #endif
 
     }
-
-
-
 
 
     private void ListeningForSpeech()

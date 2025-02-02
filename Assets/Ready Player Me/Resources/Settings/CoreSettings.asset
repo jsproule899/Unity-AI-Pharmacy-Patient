@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f12696b20f2e49519c1b2a403a76778b, type: 3}
   m_Name: CoreSettings
   m_EditorClassIdentifier: 
-  Subdomain: demo
-  AppId: 
+  Subdomain: ai-pharmacy-patientai-pharmacy-patient
+  AppId: 671992dabfd357698104b2b7
   EnableLogging: 0
-  EnableAnalytics: 1
+  EnableAnalytics: 0
   BodyType: 1

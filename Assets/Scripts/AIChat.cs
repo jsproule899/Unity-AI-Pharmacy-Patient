@@ -41,9 +41,11 @@ MEDICAL BACKGROUND:
 - Medical History: {scenario.History}
 - Current Symptoms: {scenario.Symptoms}
 - Symptom Duration: {scenario.Time}
-- Allergies: {scenario.Allergies}
-- Regular Medications: {scenario.Medicines}
+- Allergies and intolerances: {scenario.Allergies}
+- Medical conditions and Regular Medications: {scenario.Medicines}
 - Recently Added Medications: {scenario.AdditionalMeds}
+- Pregnant: {scenario.Pregnant}
+- Breastfeeding: {scenario.Breastfeeding}
 
 CONTEXT: {scenario.Context}
 ADDITIONAL INFO: {scenario.AdditionalInfo}
@@ -66,7 +68,7 @@ CONVERSATION MEMORY:
 - Maintain consistency with previously shared information
 - React appropriately to any advice or recommendations given
 
-Begin the roleplay by stating your reason for visiting the pharmacy today in as few words as possible without giving away details, based on the context provided.";
+Begin the roleplay by stating your reason for visiting the pharmacy today in as few words as possible without giving away details, based on the context provided. Do not offer to help me.";
 
             // @$"You are roleplaying as the patient in a pharmacy. The context of the roleplay is {scenario.Context}
             //                         Here are the rules for the roleplay: 
@@ -102,9 +104,11 @@ MEDICAL BACKGROUND:
 - Medical History: {scenario.History}
 - Current Symptoms: {scenario.Symptoms}
 - Symptom Duration: {scenario.Time}
-- Allergies: {scenario.Allergies}
-- Regular Medications: {scenario.Medicines}
+- Allergies and intolerances: {scenario.Allergies}
+- Medical conditions and Regular Medications: {scenario.Medicines}
 - Recently Added Medications: {scenario.AdditionalMeds}
+- Pregnant: {scenario.Pregnant}
+- Breastfeeding: {scenario.Breastfeeding}
 
 CONTEXT: {scenario.Context}
 ADDITIONAL INFO: {scenario.AdditionalInfo}
@@ -127,7 +131,7 @@ CONVERSATION MEMORY:
 - Maintain consistency with previously shared information
 - React appropriately to any advice or recommendations given
 
-Begin the roleplay by stating your reason for visiting the pharmacy today in as few words as possible without giving away details, based on the context provided.";
+Begin the roleplay by stating your reason for visiting the pharmacy today in as few words as possible without giving away details, based on the context provided. Do not offer to help me.";
 
         }
 

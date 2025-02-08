@@ -9,6 +9,7 @@ using WebGLAudioData;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using TMPro;
 
 
 public class SpeechRecognition : MonoBehaviour
@@ -22,18 +23,18 @@ public class SpeechRecognition : MonoBehaviour
     private float[] clipSampleData = new float[8192];
     private float thresholdDb = -80f;
     private bool isSetThresholdRunning = false;
-
     private float[] speechHistory = new float[3];
-
     private int speechIndex = 0;
     private bool isSpeaking = false;
     private bool hasSpoke = false;
     private bool isListening = false;
     private bool thresholdSet = false;
     private bool isPushingToTalk = false;
-
+    private bool isThinking = false;
+    private bool isThinkingCoroutineRunning = false;
+    private Coroutine thinkingCoroutine;
     private Coroutine holdDetectionCoroutine;
-    private float holdThreshold = 1.0f; // Time in seconds to consider a hold
+    private float holdThreshold = 0.5f; // Time in seconds to consider a hold
 
     private SpeechDetector speechDetector;
 
@@ -57,6 +58,11 @@ public class SpeechRecognition : MonoBehaviour
         {
             isSetThresholdRunning = true;
             StartCoroutine(SetSpeechThreshold());
+        }
+
+        if (isThinking && !isThinkingCoroutineRunning)
+        {
+            thinkingCoroutine = StartCoroutine(TranscriptionPendingText(UI.userMessage, " \u25CF \u25CF \u25CF ", 0.15f));
         }
 
         // Check for the push-to-talk key (Space key)
@@ -135,10 +141,22 @@ public class SpeechRecognition : MonoBehaviour
     //workaround for safari webgl microphone bug
     private void SafariMicrophoneInitialise()
     {
-        StartRecording();
-        Invoke("StopRecording", 0.5f);
+        toggleRecording();
+        Invoke("toggleRecording", 1f);
     }
 
+    IEnumerator TranscriptionPendingText(TextMeshProUGUI output, string newText, float typingSpeed)
+    {
+        output.text = "";
+        isThinkingCoroutineRunning = true;
+        foreach (char letter in newText)
+        {
+            output.text += letter;
+
+            yield return new WaitForSeconds(typingSpeed);
+        }
+        isThinkingCoroutineRunning = false;
+    }
 
     private float LinearToDecibel(float linear)
     {
@@ -289,13 +307,18 @@ public class SpeechRecognition : MonoBehaviour
         {
             UI.sendButton.interactable = false;
             UI.recordButton.interactable = false;
+            isThinking = true;
             float[] samples = new float[position * clip.channels];
             clip.GetData(samples, 0);
             hasSpoke = false;
             bytes = await EncodeAsWAV(samples, clip.frequency, clip.channels);
             var res = await OpenAITranscriptionRequest(bytes);
+            isThinking = false;
+            StopCoroutine(thinkingCoroutine);
+            isThinkingCoroutineRunning = false;
             if (res.Error != null)
             {
+
                 UI.AIMessage.text = "Cannot connect to transcription API";
                 UI.ToggleButtonsOnError();
                 return;
@@ -342,6 +365,7 @@ public class SpeechRecognition : MonoBehaviour
 
         using (UnityWebRequest request = UnityWebRequest.Put($"{Config.ApiBaseUrl}/api/stt/{Config.Scenario.STT ?? "openai"}", audio))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             request.method = "POST";
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)

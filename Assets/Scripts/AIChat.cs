@@ -15,17 +15,22 @@ public class AIChat : MonoBehaviour
     public UIController UI;
     [SerializeField] private ChatToVoice chatToVoice;
     public float typingSpeed = 0.05f; // Speed of typing in seconds
+
+    public bool isThinking = false;
+    public bool isThinkingCoroutineRunning = false;
+
+    private Coroutine thinkingCoroutine;
     private List<ChatMessage> chatHistory = new List<ChatMessage>();
     private Scenario scenario;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
 
         scenario = Config.Scenario;
-        
-        
+
+
         string systemPrompt;
         // string systemPrompt = "You are a 25 year old male named Dale. You are a patient in a pharmacy that is looking advice and you are talking to the pharmacist. you aren't feeling well and have the following symptons, headache, nausea, fever. you are frustrated. You are not a pharmacist. Do not offer any advice to the pharmacist. Do not break character. Do not disclose that you are an AI.";
         if (scenario.Self)
@@ -150,6 +155,10 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
             SendChat();
         }
 
+        if (isThinking && !isThinkingCoroutineRunning)
+        {
+            thinkingCoroutine = StartCoroutine(TypeText(UI.AIMessage, " \u25CF \u25CF \u25CF ", 0.15f));
+        }
     }
     public async void SendChat(string voiceMessage = "")
     {
@@ -161,6 +170,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         UI.sendButton.interactable = false;
         UI.recordButton.interactable = false;
         UI.AIMessage.text = "";
+
         ChatMessage userMessage = createUserMessage(messageToSend);
         chatHistory.Add(userMessage);
         UI.userMessage.text = userMessage.Content;
@@ -168,25 +178,31 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         UI.KeyboardInput.text = "";
 
 
+        isThinking = true;
+        AIChatRespone response = await AIChatRequest(Config.ApiBaseUrl + "/api/aichat/" + scenario.AI.ToLower(), new CreateChatCompletionRequest
+        {
+            Model = scenario.Model,
+            Messages = chatHistory
+        });
 
-        AIChatRespone response = await AIChatRequest(Config.ApiBaseUrl+"/api/aichat/"+scenario.AI.ToLower(), new CreateChatCompletionRequest
-            {
-                Model = scenario.Model,
-                Messages = chatHistory
-            });
 
-        
 
         if (response?.Message != null)
         {
             await chatToVoice.TextToSpeech(response.Message);
-            StartCoroutine(TypeText(UI.AIMessage, response.Message));
+            isThinking = false;
+
+            StopCoroutine(thinkingCoroutine);
+            isThinkingCoroutineRunning = false;
+            UI.AIMessage.text = "";
+            StartCoroutine(TypeText(UI.AIMessage, response.Message, typingSpeed));
             var assistantMessage = createAssistantMessage(response.Message);
             chatHistory.Add(assistantMessage);
 
         }
         else if (response?.Error != null)
         {
+            isThinking = false;
             UI.AIMessage.text = "Error:" + response.Error.Message;
             UI.ToggleButtonsOnError();
 
@@ -194,11 +210,12 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         }
         else
         {
+            isThinking = false;
             UI.AIMessage.text = "Error:" + "API Proxy Error";
             UI.ToggleButtonsOnError();
 
         }
-       
+
 
     }
 
@@ -239,14 +256,17 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
 
     }
 
-    IEnumerator TypeText(TextMeshProUGUI output, string newText)
+    IEnumerator TypeText(TextMeshProUGUI output, string newText, float typingSpeed)
     {
+        output.text = "";
+        isThinkingCoroutineRunning = true;
         foreach (char letter in newText)
         {
             output.text += letter;
+
             yield return new WaitForSeconds(typingSpeed);
         }
-
+        isThinkingCoroutineRunning = false;
     }
 
     private async Task<AIChatRespone> AIChatRequest(string uri, CreateChatCompletionRequest chatRequest)
@@ -256,6 +276,7 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
 
         using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)
             {

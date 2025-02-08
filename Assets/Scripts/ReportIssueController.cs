@@ -53,6 +53,7 @@ public class ReportIssueController : MonoBehaviour
 
         using (UnityWebRequest request = UnityWebRequest.Post(url, body, "application/json"))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)
             {

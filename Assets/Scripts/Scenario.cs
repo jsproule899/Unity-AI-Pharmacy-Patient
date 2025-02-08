@@ -38,6 +38,7 @@ public class Scenario
 
         using (UnityWebRequest request = UnityWebRequest.Get(config))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)
             {

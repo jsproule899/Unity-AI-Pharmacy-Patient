@@ -15,7 +15,7 @@ public class ChatToVoice : MonoBehaviour
     private Scenario scenario;
     void Start()
     {
-        
+
         avatarAudio = Config.Avatar.GetComponent<AudioSource>();
         avatarVoiceHandler = Config.Avatar.GetComponent<VoiceHandler>();
         scenario = Config.Scenario;
@@ -33,7 +33,7 @@ public class ChatToVoice : MonoBehaviour
     {
         if (avatarAudio.isPlaying)
         {
-           Config.Avatar.GetComponent<Animator>().SetBool("isTalking", true);
+            Config.Avatar.GetComponent<Animator>().SetBool("isTalking", true);
             UI.recordButton.interactable = false;
             UI.sendButton.interactable = false;
             hasPlayed = true;
@@ -44,7 +44,7 @@ public class ChatToVoice : MonoBehaviour
             UI.recordButton.interactable = true;
             UI.sendButton.interactable = true;
             hasPlayed = false;
-            
+
         }
 
     }
@@ -57,15 +57,15 @@ public class ChatToVoice : MonoBehaviour
 
         if (string.Equals(scenario.TTS, "Eleven Labs", StringComparison.OrdinalIgnoreCase))
         {
-            
+
             ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = scenario.Voice };
-            responseAudio = await VoicePostRequest(Config.ApiBaseUrl+"/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
+            responseAudio = await VoicePostRequest(Config.ApiBaseUrl + "/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
 
         }
         else if (string.Equals(scenario.TTS, "Unreal Speech", StringComparison.OrdinalIgnoreCase))
         {
             UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = scenario.Voice };
-            responseAudio = await VoicePostRequest(Config.ApiBaseUrl+"/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
+            responseAudio = await VoicePostRequest(Config.ApiBaseUrl + "/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
             // audioURI =  await UnrealSpeechUriRequest(Config.ApiBaseUrl+"/api/tts/unrealspeech/speech", body);
         }
 
@@ -75,7 +75,7 @@ public class ChatToVoice : MonoBehaviour
         }
 
         if (UI.KeyboardInput.gameObject.activeSelf)
-                UI.KeyboardInput.Select();
+            UI.KeyboardInput.Select();
 
         return PlayAvatarVoiceClip(responseAudio);
 
@@ -99,6 +99,7 @@ public class ChatToVoice : MonoBehaviour
     {
         using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             request.downloadHandler = new DownloadHandlerAudioClip(uri, AudioType.MPEG);
 
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
@@ -125,6 +126,7 @@ public class ChatToVoice : MonoBehaviour
     {
         using (UnityWebRequest request = UnityWebRequest.Post(uri, body, "application/json"))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             request.downloadHandler = new DownloadHandlerAudioClip(uri, AudioType.MPEG);
 
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
@@ -154,6 +156,7 @@ public class ChatToVoice : MonoBehaviour
     {
         using (UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
         {
+            request.SetRequestHeader("authorization", $"Bearer {Config.AuthToken}");
             UnityWebRequestAsyncOperation asyncOperation = request.SendWebRequest();
             while (!asyncOperation.isDone)
             {

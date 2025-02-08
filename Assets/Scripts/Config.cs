@@ -21,6 +21,7 @@ public class Config : MonoBehaviour
     private TMP_Text context;
 
     public static string ApiBaseUrl = "";
+    public static string AuthToken = null;
 
     public static bool AvatarIsLoaded = false;
     public static bool ConfigIsLoaded = false;
@@ -91,5 +92,11 @@ public class Config : MonoBehaviour
 
     }
 
+    public void SetAuthToken(string token)
+    {
+        if(token.Length>0)
+        AuthToken = token;
+        Debug.Log($"AuthToken set");
+    }
 
 }

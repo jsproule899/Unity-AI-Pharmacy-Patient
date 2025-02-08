@@ -6879,6 +6879,8 @@ MonoBehaviour:
   UI: {fileID: 921401561}
   chatToVoice: {fileID: 1146512490}
   typingSpeed: 0.05
+  isThinking: 0
+  isThinkingCoroutineRunning: 0
 --- !u!4 &1357820572
 Transform:
   m_ObjectHideFlags: 0

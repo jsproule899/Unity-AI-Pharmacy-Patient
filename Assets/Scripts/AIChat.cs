@@ -186,12 +186,10 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         });
 
 
-
         if (response?.Message != null)
         {
             await chatToVoice.TextToSpeech(response.Message);
             isThinking = false;
-
             StopCoroutine(thinkingCoroutine);
             isThinkingCoroutineRunning = false;
             UI.AIMessage.text = "";
@@ -203,6 +201,9 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         else if (response?.Error != null)
         {
             isThinking = false;
+            StopCoroutine(thinkingCoroutine);
+            isThinkingCoroutineRunning = false;
+            UI.AIMessage.text = "";
             UI.AIMessage.text = "Error:" + response.Error.Message;
             UI.ToggleButtonsOnError();
 
@@ -211,6 +212,9 @@ Begin the roleplay by stating your reason for visiting the pharmacy today in as 
         else
         {
             isThinking = false;
+            StopCoroutine(thinkingCoroutine);
+            isThinkingCoroutineRunning = false;
+            UI.AIMessage.text = "";
             UI.AIMessage.text = "Error:" + "API Proxy Error";
             UI.ToggleButtonsOnError();
 

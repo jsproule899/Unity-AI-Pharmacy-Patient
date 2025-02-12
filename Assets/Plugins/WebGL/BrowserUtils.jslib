@@ -96,7 +96,7 @@ BrowserHelper = {
         const blob = new Blob([myInstance.textData.initialContent + myInstance.textData.appendedContent.join('\n')], { type: 'text/plain' });
 
         try{
-            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text() );
+            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text(),  filename.split('_')[0]);
         }catch(e){
             console.warn("failed to dispatch upload event");
         }

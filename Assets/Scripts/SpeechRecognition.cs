@@ -48,7 +48,8 @@ public class SpeechRecognition : MonoBehaviour
     {
 
         //Workaround for Safari Microphone bug
-        SafariMicrophoneInitialise();
+        Microphone.GetPosition(null);
+        // StartCoroutine(SafariMicrophoneInitialise());
 
     }
 
@@ -92,7 +93,9 @@ public class SpeechRecognition : MonoBehaviour
     public void OnRecordButtonPointerDown()
     {
         // Start checking for hold
+        if(!UI.recordButton.interactable) return;
         holdDetectionCoroutine = StartCoroutine(HoldDetection());
+        
     }
 
     private IEnumerator HoldDetection()
@@ -106,6 +109,7 @@ public class SpeechRecognition : MonoBehaviour
 
     public void OnRecordButtonPointerUp()
     {
+         if(!UI.recordButton.interactable) return;
         if (holdDetectionCoroutine != null)
         {
             // Hold detection was not completed: treat as click
@@ -139,10 +143,12 @@ public class SpeechRecognition : MonoBehaviour
     }
 
     //workaround for safari webgl microphone bug
-    private void SafariMicrophoneInitialise()
+    private IEnumerator SafariMicrophoneInitialise()
     {
-        toggleRecording();
-        Invoke("toggleRecording", 1f);
+        clip = Microphone.Start(null, false, 5, 44100);
+        yield return new WaitForSeconds(1);
+        Microphone.End(null);
+        isRecording = false;
     }
 
     IEnumerator TranscriptionPendingText(TextMeshProUGUI output, string newText, float typingSpeed)

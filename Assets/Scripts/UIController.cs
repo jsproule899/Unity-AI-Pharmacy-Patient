@@ -1,5 +1,8 @@
+using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -9,14 +12,19 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-
+    private EventSystem system;
+    private Auth auth;
     public InputField studentNumInput;
+    public InputField passwordInput;
+    public Button togglePassword;
+    public TextMeshProUGUI errMessageText;
+    public GameObject errMessage;
     public InputField justificationInput;
-
     public InputField KeyboardInput;
     public TextMeshProUGUI userMessage;
     public TextMeshProUGUI AIMessage;
     public Button startButton;
+    public TextMeshProUGUI startButtonText;
     public Button treatButton;
     public Button referButton;
     public Button switchInputButton;
@@ -27,27 +35,27 @@ public class UIController : MonoBehaviour
 
     void Awake()
     {
+        system = EventSystem.current;
+
 
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 0:
+                auth = GameObject.Find("Authentication").GetComponent<Auth>();
                 studentNumInput = GameObject.Find("Student Num Input").GetComponent<InputField>();
+                passwordInput = GameObject.Find("Password").GetComponent<InputField>();
+                togglePassword = GameObject.Find("Show Password").GetComponentInChildren<Button>();
+                errMessageText = GameObject.Find("Error Message").GetComponentInChildren<TextMeshProUGUI>();
+                errMessage = GameObject.Find("Error Message");
+                errMessage.SetActive(false);
                 startButton = GameObject.Find("Start Button").GetComponent<Button>();
-                startButton.onClick.AddListener(() =>
-                {
-                    Config.Student = new Student(studentNumInput.text);
-                    Config.ChatLog = new ChatLog($"{Config.Student.Id}_{Config.Scenario._id}");
-                    Config.ChatLog.WriteConfigToChatLog();
+                startButtonText = startButton.GetComponentInChildren<TextMeshProUGUI>();
 
 
-                });
-
-                studentNumInput.onSubmit.AddListener((text) =>
-                {
-                    if (startButton.interactable) startButton.onClick.Invoke();
-                });
 
                 studentNumInput.Select();
+                studentNumInput.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                system.SetSelectedGameObject(studentNumInput.gameObject, new BaseEventData(system));
                 break;
             case 1:
                 switchInputButton = GameObject.Find("Toggle Input").GetComponent<Button>();
@@ -60,24 +68,54 @@ public class UIController : MonoBehaviour
                 issueModal = GameObject.Find("Issue Modal");
                 SwitchInput();
                 break;
-            case 2:
-                justificationInput = GameObject.Find("Justification Input").GetComponent<InputField>();
-                treatButton = GameObject.Find("Treat Button").GetComponent<Button>();
-                referButton = GameObject.Find("Refer Button").GetComponent<Button>();
-                justificationInput.Select();
-                treatButton.onClick.AddListener(() =>
-                {
-                    Config.ChatLog.WriteOutcomeToChatLog("Treat", justificationInput.text);
 
-                });
-
-                referButton.onClick.AddListener(() =>
-                {
-                    Config.ChatLog.WriteOutcomeToChatLog("Refer", justificationInput.text);
-                });
-                break;
         }
 
+    }
+
+    void Start()
+    {
+        switch (SceneManager.GetActiveScene().buildIndex)
+        {
+            case 0:
+
+
+                startButton.onClick.AddListener(async () =>
+                                {
+
+                                    if (!auth.isAuth)
+                                    {
+                                        await auth.LoginAsync();
+                                    }
+                                    if (auth.isAuth)
+                                    {
+                                        Config.Student = new Student(auth.studentNum);
+                                        Config.ChatLog = new ChatLog($"{Config.Student.Id}_{Config.Scenario._id}");
+                                        Config.ChatLog.WriteConfigToChatLog();
+                                        GameObject.Find("SceneController").GetComponent<SceneController>().LoadNextScene();
+                                    }
+
+
+
+                                });
+
+                passwordInput.onSubmit.AddListener((text) =>
+                {
+                    if (startButton.interactable) startButton.onClick.Invoke();
+                });
+
+                if (auth.isAuth)
+                {
+                    studentNumInput.gameObject.SetActive(false);
+                    passwordInput.gameObject.SetActive(false);
+                }
+
+                studentNumInput.Select();
+                studentNumInput.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                system.SetSelectedGameObject(studentNumInput.gameObject, new BaseEventData(system));
+                break;
+
+        }
     }
 
 
@@ -86,7 +124,16 @@ public class UIController : MonoBehaviour
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 0:
-                ValidateStudentNumInput();
+                if (!auth.isAuth)
+                {
+                    startButton.interactable = ValidateStudentNumInput() && ValidatePasswordInput();
+                }
+                else
+                {
+                    startButton.interactable = true;
+                    studentNumInput.gameObject.SetActive(false);
+                    passwordInput.gameObject.SetActive(false);
+                }
                 break;
             case 1:
                 break;
@@ -95,19 +142,19 @@ public class UIController : MonoBehaviour
 
         }
 
+        TabInputs();
+
 
     }
 
-    private void ValidateStudentNumInput()
+    private bool ValidateStudentNumInput()
     {
-        if (studentNumInput.text != null && studentNumInput.text.Length > 6)
-        {
-            startButton.interactable = true;
-        }
-        else
-        {
-            startButton.interactable = false;
-        }
+        return studentNumInput.text != null && studentNumInput.text.Length > 6;
+    }
+
+    private bool ValidatePasswordInput()
+    {
+        return passwordInput.text != null && passwordInput.text.Length > 6;
     }
 
     public void SwitchInput()
@@ -143,7 +190,26 @@ public class UIController : MonoBehaviour
         sendButton.interactable = !sendButton.interactable;
     }
 
-    public void setButtonColor(Button button, string colour)
+    public void ShowError(string message)
+    {
+
+        errMessageText.text = message;
+        errMessage.SetActive(true);
+
+    }
+
+    public IEnumerator ErrorToast(string message, int timeInSeconds)
+    {
+
+        errMessageText.text = message;
+        errMessage.SetActive(true);
+
+        yield return new WaitForSeconds(timeInSeconds);
+
+        errMessage.SetActive(false);
+    }
+
+    public void SetButtonColor(Button button, string colour)
     {
 
         if (colour.Equals("red"))
@@ -155,6 +221,51 @@ public class UIController : MonoBehaviour
             button.image.color = new Color32(255, 255, 255, 255);
         }
 
+    }
+
+    public async void TogglePasswordAsync()
+    {
+        passwordInput.inputType = (passwordInput.inputType == InputField.InputType.Password) ? InputField.InputType.Standard : InputField.InputType.Password;
+        passwordInput.OnPointerClick(new PointerEventData(system));
+
+        await Task.Delay(250);
+        passwordInput.ActivateInputField();
+        passwordInput.MoveTextEnd(false);
+        
+
+
+    }
+
+   
+
+
+    private void TabInputs()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Selectable next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
+
+            if (next != null)
+            {
+
+                InputField inputfield = next.GetComponent<InputField>();
+                if (inputfield != null)
+                    inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+
+                system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+            }
+            else
+            {
+                Selectable prev = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnUp();
+                InputField inputfield = prev.GetComponent<InputField>();
+                if (inputfield != null)
+                    inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+
+                system.SetSelectedGameObject(prev.gameObject, new BaseEventData(system));
+            }
+
+
+        }
     }
 
 }

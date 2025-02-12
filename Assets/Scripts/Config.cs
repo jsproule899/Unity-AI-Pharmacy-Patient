@@ -29,10 +29,10 @@ public class Config : MonoBehaviour
 
     async void Awake()
     {
-#if !UNITY_EDITOR && UNITY_WEBGL
-        // disable WebGLInput.captureAllKeyboardInput so elements in web page can handle keyboard inputs
-        WebGLInput.captureAllKeyboardInput = false;
-#endif
+// #if !UNITY_EDITOR && UNITY_WEBGL
+//         // disable WebGLInput.captureAllKeyboardInput so elements in web page can handle keyboard inputs
+//         WebGLInput.captureAllKeyboardInput = false;
+// #endif
 
         if (!ConfigIsLoaded)
         {
@@ -92,11 +92,5 @@ public class Config : MonoBehaviour
 
     }
 
-    public void SetAuthToken(string token)
-    {
-        if(token.Length>0)
-        AuthToken = token;
-        Debug.Log($"AuthToken set");
-    }
 
 }

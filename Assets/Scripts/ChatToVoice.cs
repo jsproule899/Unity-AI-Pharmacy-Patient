@@ -55,19 +55,9 @@ public class ChatToVoice : MonoBehaviour
         string audioURI = null;
         AudioClip responseAudio = null;
 
-        if (string.Equals(scenario.TTS, "Eleven Labs", StringComparison.OrdinalIgnoreCase))
-        {
-
-            ElevenLabsRequest body = new ElevenLabsRequest { Text = text, Voice = scenario.Voice };
-            responseAudio = await VoicePostRequest(Config.ApiBaseUrl + "/api/tts/elevenlabs/", JsonConvert.SerializeObject(body));
-
-        }
-        else if (string.Equals(scenario.TTS, "Unreal Speech", StringComparison.OrdinalIgnoreCase))
-        {
-            UnrealSpeechRequest body = new UnrealSpeechRequest { Text = text, Voice = scenario.Voice };
-            responseAudio = await VoicePostRequest(Config.ApiBaseUrl + "/api/tts/unrealspeech/stream", JsonConvert.SerializeObject(body));
-            // audioURI =  await UnrealSpeechUriRequest(Config.ApiBaseUrl+"/api/tts/unrealspeech/speech", body);
-        }
+        string apiRoute = "/api/tts/" + scenario.TTS.Replace(" ", "").ToLower();
+        VoiceRequest body = new VoiceRequest { Text = text, Voice = scenario.Voice, Mode="stream"};
+        responseAudio = await VoicePostRequest(Config.ApiBaseUrl + apiRoute, JsonConvert.SerializeObject(body));
 
         if (audioURI != null)
         {
@@ -182,24 +172,17 @@ public struct UnrealSpeechResponse
     public string OutputUri;
 }
 
-public class UnrealSpeechRequest
-{
-    [JsonProperty("Text")]
-    public string Text;
 
-    [JsonProperty("VoiceId")]
-    public string Voice;
-
-
-}
-
-public struct ElevenLabsRequest
+public struct VoiceRequest
 {
     [JsonProperty("text")]
     public string Text { get; set; }
 
     [JsonProperty("voice")]
     public string Voice { get; set; }
+
+    [JsonProperty("mode")]
+    public string Mode { get; set; }
 
 
 }

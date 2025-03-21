@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using TMPro;
+using System.ComponentModel;
 
 
 public class SpeechRecognition : MonoBehaviour
@@ -35,8 +36,9 @@ public class SpeechRecognition : MonoBehaviour
     private Coroutine thinkingCoroutine;
     private Coroutine holdDetectionCoroutine;
     private float holdThreshold = 0.5f; // Time in seconds to consider a hold
-
     private SpeechDetector speechDetector;
+
+    private string[] shortValidTranscriptions = {"yes", "yea", "no", "bye", "hi", "hey", "ok", "why", "id"};
 
 
     void Awake()
@@ -69,12 +71,26 @@ public class SpeechRecognition : MonoBehaviour
         // Check for the push-to-talk key (Space key)
         if (Input.GetKeyDown(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
-            StartPushToTalk();
+            if (holdDetectionCoroutine == null)
+            {
+                OnRecordButtonPointerDown();
+            }
+
         }
 
         if (Input.GetKeyUp(KeyCode.Space) && UI.recordButton.gameObject.activeSelf && UI.recordButton.interactable)
         {
+            if (holdDetectionCoroutine != null)
+        {
+            // Hold detection was not completed: ignore push to talk
+            StopCoroutine(holdDetectionCoroutine);
+            holdDetectionCoroutine = null;
+        }
+        else
+        {
+            // Hold was detected: stop push-to-talk
             StopPushToTalk();
+        }
         }
 
         if (!isRecording && !hasSpoke && isListening && UI.recordButton.interactable)
@@ -93,9 +109,9 @@ public class SpeechRecognition : MonoBehaviour
     public void OnRecordButtonPointerDown()
     {
         // Start checking for hold
-        if(!UI.recordButton.interactable) return;
+        if (!UI.recordButton.interactable) return;
         holdDetectionCoroutine = StartCoroutine(HoldDetection());
-        
+
     }
 
     private IEnumerator HoldDetection()
@@ -109,7 +125,7 @@ public class SpeechRecognition : MonoBehaviour
 
     public void OnRecordButtonPointerUp()
     {
-         if(!UI.recordButton.interactable) return;
+        if (!UI.recordButton.interactable) return;
         if (holdDetectionCoroutine != null)
         {
             // Hold detection was not completed: treat as click
@@ -140,6 +156,14 @@ public class SpeechRecognition : MonoBehaviour
             isSpeaking = false;
             ToggleListening();
         }
+    }
+
+    public void CancelSpeechDetection()
+    {
+        isListening = false;
+        hasSpoke = false;
+        isSpeaking = false;
+        if (isRecording) StopRecording();
     }
 
     //workaround for safari webgl microphone bug
@@ -294,7 +318,7 @@ public class SpeechRecognition : MonoBehaviour
         if (isRecording) return;
         UI.recordButton.animator.SetBool("isRecording", true);
 
-        clip = Microphone.Start(null, false, 240, 44100);
+        clip = Microphone.Start(null, true, 240, 44100);
         audioSource.clip = clip;
         audioSource.Play();
         isRecording = true;
@@ -324,8 +348,13 @@ public class SpeechRecognition : MonoBehaviour
             isThinkingCoroutineRunning = false;
             if (res.Error != null)
             {
-
-                UI.AIMessage.text = "Cannot connect to transcription API";
+                UI.AIMessage.text = res.Error.Message ?? "Cannot connect to transcription API";
+                UI.ToggleButtonsOnError();
+                return;
+            }
+            if (res.Text.Length <= 3 && !shortValidTranscriptions.Contains(res.Text.ToLower()))
+            {
+                UI.AIMessage.text = "Sorry I didn't hear that? Try again...";
                 UI.ToggleButtonsOnError();
                 return;
             }

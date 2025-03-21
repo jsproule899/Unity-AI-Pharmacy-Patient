@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "com.bnco.unity-webgl-microphone": "https://github.com/jsproule899/unity-webgl-microphone.git",
+    "com.bnco.unity-webgl-microphone": "https://github.com/bnco-dev/unity-webgl-microphone.git",
+    "com.endel.nativewebsocket": "https://github.com/endel/NativeWebSocket.git#upm",
     "com.srcnalt.openai-unity": "https://github.com/srcnalt/OpenAI-Unity.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.cloud.gltfast": "6.0.1",
@@ -14,6 +15,7 @@
     "com.unity.timeline": "1.7.6",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.9.4",
+    "com.unity.webrtc": "3.0.0-pre.8",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

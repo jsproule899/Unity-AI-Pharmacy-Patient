@@ -23,6 +23,7 @@ public class UIController : MonoBehaviour
     public InputField KeyboardInput;
     public TextMeshProUGUI userMessage;
     public TextMeshProUGUI AIMessage;
+    public TextMeshProUGUI AIFeedback;
     public Button startButton;
     public TextMeshProUGUI startButtonText;
     public Button treatButton;
@@ -67,6 +68,9 @@ public class UIController : MonoBehaviour
                 outcomeModal = GameObject.Find("Outcome Modal");
                 issueModal = GameObject.Find("Issue Modal");
                 SwitchInput();
+                break;
+            case 2:
+                AIFeedback = GameObject.Find("FeedbackTMP").GetComponent<TextMeshProUGUI>();
                 break;
 
         }
@@ -231,12 +235,12 @@ public class UIController : MonoBehaviour
         await Task.Delay(250);
         passwordInput.ActivateInputField();
         passwordInput.MoveTextEnd(false);
-        
+
 
 
     }
 
-   
+
 
 
     private void TabInputs()

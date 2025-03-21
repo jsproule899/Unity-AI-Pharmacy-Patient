@@ -29,5 +29,7 @@ namespace JSBrowserUtilities
         public static extern bool JS_TextFile_Append(string textToAppend);
         [DllImport("__Internal")]
         public static extern bool JS_TextFile_CreateBlob(string filename);
+        [DllImport("__Internal")]
+        public static extern bool JS_TextFile_Download();
     }
 }

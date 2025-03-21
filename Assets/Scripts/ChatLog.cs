@@ -58,51 +58,22 @@ public class ChatLog
         }
     }
 
-    public bool WriteMessagesToChatLog(List<ChatMessage> chatHistory)
+    public bool WriteMessagesToChatLog()
     {
         try
         {
+
 #if UNITY_EDITOR
             using (StreamWriter writer = File.AppendText(filepath))
             {
-
-                foreach (ChatMessage message in chatHistory)
-                {
-                    switch (message.Role)
-                    {
-                        case "assistant":
-                            writer.Write("Patient: ");
-                            writer.WriteLine(message.Content);
-                            break;
-                        case "user":
-                            writer.Write("Pharmacist: ");
-                            writer.WriteLine(message.Content);
-                            break;
-                        default:
-                            // writer.WriteLine("----------Scenario prompt-----------");
-                            // writer.WriteLine(message.Content);
-                            writer.WriteLine("-----------Conversation------------");
-                            break;
-                    }
-                }
-
+                writer.WriteLine("-----------Conversation------------");
+                writer.WriteLine(Config.Conversation);
             }
 #elif !UNITY_EDITOR && UNITY_WEBGL
-            foreach (ChatMessage message in chatHistory)
-                {
-                    switch (message.Role)
-                    {
-                        case "assistant":                            
-                             BrowserHelper.JS_TextFile_Append("Patient: " + message.Content);
-                            break;
-                        case "user":
-                            BrowserHelper.JS_TextFile_Append("Pharmacist: " + message.Content);
-                            break;
-                        default:                            
-                            BrowserHelper.JS_TextFile_Append("-----------Conversation------------");
-                            break;
-                    }
-                }
+           
+                BrowserHelper.JS_TextFile_Append("-----------Conversation------------");
+                BrowserHelper.JS_TextFile_Append(Config.Conversation);
+                                     
 #endif
             return true;
 

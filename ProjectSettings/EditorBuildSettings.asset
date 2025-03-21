@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/AI-Pharmacy-Patient0.unity
     guid: b68336f70c67ff64794654413fb3cf98
-  - enabled: 0
-    path: Assets/Scenes/AI-Pharmacy-Outcome.unity
+  - enabled: 1
+    path: Assets/Scenes/AI-Pharmacy-Feedback.unity
     guid: 9714b9d28b750ec43b2590a1f84c159d
   m_configObjects: {}

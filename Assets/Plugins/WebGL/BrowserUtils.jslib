@@ -80,7 +80,7 @@ BrowserHelper = {
         }
 
         myInstance.textData = {
-            initialContent: initialText +"\n",
+            initialContent: initialText + "\n",
             appendedContent: []
         };
 
@@ -95,29 +95,29 @@ BrowserHelper = {
 
         const blob = new Blob([myInstance.textData.initialContent + myInstance.textData.appendedContent.join('\n')], { type: 'text/plain' });
 
-        try{
-            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text(),  filename.split('_')[0]);
-        }catch(e){
+        try {
+            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text(), filename.split('_')[0]);
+        } catch (e) {
             console.warn("failed to dispatch upload event");
         }
 
         // Create an Object URL for the Blob
-        const url = URL.createObjectURL(blob);
+        myInstance.textBlobURL = URL.createObjectURL(blob);
 
+
+
+    },
+    JS_TextFile_Download: function () {
         const link = document.createElement('a');
-        link.href = url;
+        link.href = myInstance.textBlobURL;
         link.download = filename;
 
         // Trigger the download by simulating a click
         link.click();
 
         // Clean up the Object URL after download
-        URL.revokeObjectURL(url);
-        
+        URL.revokeObjectURL(myInstance.textBlobURL);
     }
-    
-
-
 
 }
 mergeInto(LibraryManager.library, BrowserHelper);

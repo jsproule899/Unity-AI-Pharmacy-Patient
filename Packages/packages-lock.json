@@ -1,11 +1,18 @@
 {
   "dependencies": {
     "com.bnco.unity-webgl-microphone": {
-      "version": "https://github.com/jsproule899/unity-webgl-microphone.git",
+      "version": "https://github.com/bnco-dev/unity-webgl-microphone.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "a673b8fdb0056281668f5cdeefc37baa01a6e843"
+      "hash": "bad36244303305fcbdfcb764c30d5bc9be480676"
+    },
+    "com.endel.nativewebsocket": {
+      "version": "https://github.com/endel/NativeWebSocket.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "1d8b49b3fee41c09a98141f1f1a5e4db47e14229"
     },
     "com.srcnalt.openai-unity": {
       "version": "https://github.com/srcnalt/OpenAI-Unity.git",
@@ -220,6 +227,17 @@
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.webrtc": {
+      "version": "3.0.0-pre.8",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.editorcoroutines": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"

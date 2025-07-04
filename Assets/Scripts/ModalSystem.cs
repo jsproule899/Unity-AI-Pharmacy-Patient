@@ -16,14 +16,11 @@ public class ModalSystem : MonoBehaviour
 public void Show()
 {
     modal.gameObject.SetActive(true);
-    UI.recordButton.interactable = false;
-
 }
 
 public void Hide()
 {
     modal.gameObject.SetActive(false);
-    UI.recordButton.interactable = true;
 }
 
 public InputField[] GetInputs()

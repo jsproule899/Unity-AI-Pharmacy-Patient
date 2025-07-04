@@ -24,6 +24,7 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI userMessage;
     public TextMeshProUGUI AIMessage;
     public TextMeshProUGUI AIFeedback;
+    public Scrollbar feedbackScrollbar;
     public Button startButton;
     public TextMeshProUGUI startButtonText;
     public Button treatButton;
@@ -71,6 +72,7 @@ public class UIController : MonoBehaviour
                 break;
             case 2:
                 AIFeedback = GameObject.Find("FeedbackTMP").GetComponent<TextMeshProUGUI>();
+                feedbackScrollbar =  GameObject.Find("Feedback").GetComponent<ScrollRect>().verticalScrollbar;
                 break;
 
         }

@@ -31,9 +31,9 @@ public class FeedbackController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isGeneratingCoroutineRunning)
-        {
-            GameObject.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 0;
+        if (isGeneratingCoroutineRunning && UI.feedbackScrollbar.IsActive())
+        {     
+            UI.feedbackScrollbar.value = 0;
         }
 
         if (isGenerating && !isGeneratingCoroutineRunning)

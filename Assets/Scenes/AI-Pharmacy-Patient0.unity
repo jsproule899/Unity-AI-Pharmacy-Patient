@@ -576,6 +576,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 2118616356}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Show
@@ -5806,6 +5818,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Show
@@ -7088,6 +7112,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2118616356}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: ClearInputs
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8559,6 +8595,18 @@ MonoBehaviour:
       - m_Target: {fileID: 2118616356}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Hide
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11803,6 +11851,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1444886706}
     m_Modifications:
+    - target: {fileID: 1431713146377035371, guid: 69b0dbb59bf589047aacfa7a4300e3a3, type: 3}
+      propertyPath: m_Name
+      value: female_01
+      objectReference: {fileID: 0}
     - target: {fileID: 6622245888455987398, guid: 69b0dbb59bf589047aacfa7a4300e3a3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.010151088
@@ -11842,10 +11894,6 @@ PrefabInstance:
     - target: {fileID: 6622245888455987398, guid: 69b0dbb59bf589047aacfa7a4300e3a3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1431713146377035371, guid: 69b0dbb59bf589047aacfa7a4300e3a3, type: 3}
-      propertyPath: m_Name
-      value: female_01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13243,6 +13291,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Hide
@@ -13383,6 +13443,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: Hide
@@ -15397,6 +15469,18 @@ MonoBehaviour:
       - m_Target: {fileID: 8827395804251152272}
         m_TargetAssemblyTypeName: ModalSystem, Assembly-CSharp
         m_MethodName: ClearInputs
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 921401561}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ToggleButtonsOnError
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

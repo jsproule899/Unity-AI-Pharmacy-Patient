@@ -91,12 +91,14 @@ BrowserHelper = {
     },
     JS_TextFile_CreateBlob: async function (filenamePtr) {
 
-        filename = UTF8ToString(filenamePtr) + '.txt'
-
+        filename = UTF8ToString(filenamePtr); 
+        parts = filename.split('_');
+        studentNo = parts.pop();
+        studentId = parts[0];
+        filename = parts.join('_') + '.txt';
         const blob = new Blob([myInstance.textData.initialContent + myInstance.textData.appendedContent.join('\n')], { type: 'text/plain' });
-
         try {
-            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text(), filename.split('_')[0]);
+            window.dispatchReactUnityEvent("UploadTranscript", filename, await blob.text(), studentNo, studentId);
         } catch (e) {
             console.warn("failed to dispatch upload event");
         }

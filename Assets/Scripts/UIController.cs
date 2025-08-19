@@ -72,7 +72,7 @@ public class UIController : MonoBehaviour
                 break;
             case 2:
                 AIFeedback = GameObject.Find("FeedbackTMP").GetComponent<TextMeshProUGUI>();
-                feedbackScrollbar =  GameObject.Find("Feedback").GetComponent<ScrollRect>().verticalScrollbar;
+                feedbackScrollbar = GameObject.Find("Feedback").GetComponent<ScrollRect>().verticalScrollbar;
                 break;
 
         }
@@ -120,7 +120,9 @@ public class UIController : MonoBehaviour
                 studentNumInput.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
                 system.SetSelectedGameObject(studentNumInput.gameObject, new BaseEventData(system));
                 break;
-
+            case 1:
+                if (!Config.Scenario.Anonymize) { GameObject.Find("Anon Modal").GetComponent<ModalSystem>().Hide(); }
+                break;
         }
     }
 

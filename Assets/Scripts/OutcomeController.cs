@@ -21,11 +21,18 @@ public class OutcomeController : MonoBehaviour
 
         ShowOutcomeResult();
         saveToLog();
-        #if UNITY_WEBGL
+#if UNITY_WEBGL
         string timestamp = DateTime.Now.ToString("yyyyddMM_HHmmss");
-        BrowserHelper.JS_TextFile_CreateBlob($"{Config.Student.Id}_chatlog_{timestamp}");
+        if (Config.Scenario.Anonymize)
+        {
+            BrowserHelper.JS_TextFile_CreateBlob($"Anonymous_chatlog_{timestamp}_{Config.Student.Id}");
+        }
+        else
+        {
+            BrowserHelper.JS_TextFile_CreateBlob($"{Config.Student.Id}_chatlog_{timestamp}_{Config.Student.Id}");
+        }
         // StartCoroutine(DelayedRedirect(2));
-        #endif
+#endif
     }
 
 

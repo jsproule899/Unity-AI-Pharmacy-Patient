@@ -20,6 +20,10 @@ public class ReportIssueController : MonoBehaviour
 
     public void Update()
     {
+    }
+
+    public void ToggleSubmitButtonOnInput()
+    {
         string inputText = modal.GetInputs()[0].text;
         if (inputText == null || inputText.Length == 0)
         {
@@ -31,7 +35,6 @@ public class ReportIssueController : MonoBehaviour
             modal.RecursiveFindChild(modal.transform, "Confirm Button").gameObject.GetComponent<Button>().interactable = true;
         }
     }
-
 
     public static void HandleSubmit(ModalSystem modal)
     {

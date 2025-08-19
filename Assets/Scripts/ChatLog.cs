@@ -36,14 +36,28 @@ public class ChatLog
 #if UNITY_EDITOR
             using (StreamWriter writer = File.AppendText(filepath))
             {
-                writer.WriteLine("Student: " + Config.Student.Id);
+                if (Config.Scenario.Anonymize)
+                {
+                    BrowserHelper.JS_TextFile_Append("Student: Anonymous");
+                }
+                else
+                {
+                    BrowserHelper.JS_TextFile_Append("Student: " + Config.Student.Id);
+                }
                 writer.WriteLine("----------Scenario-----------");
                 writer.WriteLine(Config.Scenario.Context);
                 //TODO - add more scenario identifiers.
 
             }
 #elif !UNITY_EDITOR && UNITY_WEBGL
-                BrowserHelper.JS_TextFile_Append("Student: " + Config.Student.Id);
+                if (Config.Scenario.Anonymize)
+                {
+                    BrowserHelper.JS_TextFile_Append("Student: Anonymous");
+                }
+                else
+                {
+                    BrowserHelper.JS_TextFile_Append("Student: " + Config.Student.Id);
+                }
                 BrowserHelper.JS_TextFile_Append("----------Scenario-----------");
                 BrowserHelper.JS_TextFile_Append(Config.Scenario.Context);
 #endif

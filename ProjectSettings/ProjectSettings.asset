@@ -651,7 +651,7 @@ PlayerSettings:
   webGLMemoryLinearGrowthStep: 16
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
-  webGLPowerPreference: 2
+  webGLPowerPreference: 0
   scriptingDefineSymbols:
     Android: READY_PLAYER_ME;UNITY_POST_PROCESSING_STACK_V2
     EmbeddedLinux: READY_PLAYER_ME;UNITY_POST_PROCESSING_STACK_V2

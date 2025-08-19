@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.Networking;
 public class Scenario
 {
     public string _id { get; set; }
-
+    public bool Anonymize { get; set; }  = false;
     public string Theme { get; set; }
     public string Context { get; set; }
     public string Name { get; set; }
